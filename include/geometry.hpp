@@ -4,6 +4,9 @@
 #pragma once
 
 namespace geometry {
+
+    
+
     class point_t
     {
     public:
@@ -19,11 +22,10 @@ namespace geometry {
 
     }; // class point_t
 
-
     class line_t
     {
     public:
-        double x0_ = NAN, y0_ = NAN, z0_ = NAN;
+        point_t p1, p2;
         double a_  = NAN, b_  = NAN, c_  = NAN;
     
         bool is_valid() const;

@@ -22,16 +22,16 @@ namespace geometry{
 
         bool point_t::equal(const point_t &other) const
         {
-            bool equal = std::fabs(this->x_ - other.x_) < std::numeric_limits<double>::epsilon();
-            equal &= std::fabs(this->y_ - other.y_) < std::numeric_limits<double>::epsilon();
-            equal &= std::fabs(this->z_ - other.z_) < std::numeric_limits<double>::epsilon();
+            bool equal = equal(this->x_, other.x_);
+            equal &=     equal(this->y_, other.y_);
+            equal &=     equal(this->z_, other.z_);
             return equal; 
         }
 
         bool line_t::is_valid() const 
         {
             bool is_valid = x0_ != NAN && y0_ != NAN && z0_ != NAN; 
-            is_valid = a_ != NAN && b_ != NAN && c_ != NAN;
+            is_valid &= a_ != NAN && b_ != NAN && c_ != NAN;
             is_valid &= a_ || b_ || c_;
             
             return is_valid;
@@ -42,8 +42,7 @@ namespace geometry{
             std::cout << "line:" << a_ << " * x + " << b_ << " y + " << c_ << " = 0" << std::endl;
         }
 
-        line_t::line_t(const point_t &p1, const point_t &p2) :  x0_(p1.x_),        y0_(p1.y_),        z0_(p1.z_),
-                                                                a_(p2.x_ - p1.x_), b_(p2.y_ - p1.y_), c_(p2.z_ - p1.z_) {}
+        line_t::line_t(const point_t &p1, const point_t &p2) :  p1_(p1), p2_(p2), a_(p2.x_ - p1.x_), b_(p2.y_ - p1.y_), c_(p2.z_ - p1.z_) {}
 
         bool triangle_t::is_valid() const
         {
@@ -68,6 +67,6 @@ namespace geometry{
 
             return is_valid;
         }
-        
+
 
 } // namespace geometry
