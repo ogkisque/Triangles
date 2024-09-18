@@ -11,21 +11,10 @@ namespace geometry {
         double x_ = NAN; 
         double y_ = NAN;
 
-        bool is_valid() const
-        {
-            return (x_ != NAN && y_ != NAN);
-        }
+        bool is_valid() const;
+        void print() const;
+        bool equal(const point_t &other_p) const;
         
-        void print() const
-        {
-            std::cout << "( " << x_ << " ; " << y_ << " )" << std::endl;
-        }
-
-        bool equal(const point_t &other) const
-        {
-            return (this->x_ == other.x_ && this->y_ == other.y_); 
-        }
-
         point_t(const double x, const double y) : x_(x), y_(y) {}
 
     }; // class point_t
@@ -36,30 +25,22 @@ namespace geometry {
         double a_ = -1, b_ = 1, c_ = 0;
 
     public:
-        void print() const 
-        {
-            std::cout << "line:" << a_ << " * x + " << b_ << " y + " << c_ << " = 0" << std::endl;
-        }
-
-        bool is_valid() const
-        {
-            return a_ || b_ || c_;
-        }
-
-        line_t(const point_t &p1, const point_t &p2)
-        {
-            double angle = std::atan((p2.y_ - p1.y_) / (p2.x_ - p1.x_));
-            double sin_angle = std::sin(angle);
-            double cos_angle = std::sqrt(1 - sin_angle * sin_angle);
-
-            point_t normal_vector{-sin_angle, cos_angle};
-            a_ = -sin_angle;
-            b_ =  cos_angle;
-            c_ = -(p1.x_ * (-sin_angle) + p2.y_ * cos_angle);
-        }
+        bool is_valid() const;
+        void print() const; 
         
+
+        line_t(const point_t &p1, const point_t &p2);
         line_t(const double a, const double b, const double c) : a_(a), b_(b), c_(c) {}
 
-    }; // class Line
+    }; // class line_t
+
+    class triangle_t 
+    {
+        point_t p1_, p2_, p3_;
+    public:
+        bool is_valid() const;
+
+        triangle_t(const point_t &p1, const point_t &p2, const point_t &p3) : p1_(p1), p2_(p2), p3_(p3) {} 
+    }; // 
 
 } // namespace geometry
