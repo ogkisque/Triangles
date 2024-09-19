@@ -50,11 +50,43 @@ namespace geometry
         return std::min(param1, param2) < cur_param < std::max(param1, param2);
     }
 
+    bool point_belongs_to_plane(const point_t& p, const triangle_t& t) // принадлежит ли точка треугольнику
+    {
+        plane_t plane = t.plane_;
+        double temp = plane.a_ * p.x_ + plane.b_ * p.y_ + plane.c_ * p.z_ + plane.d_;
+        
+        if (!equald(temp, 0))
+            return false;
+        
+        point_t A = t.p1_, B = t.p2_, C = t.p3_, O = p;
+
+        vector_t AB{A, B};
+        vector_t AO{A, O};
+        vector_t v1 = AB.vector_multiply(AO);
+
+        vector_t BC{B, C};
+        vector_t BO{B, O};
+        vector_t v2 = BC.vector_multiply(BO);
+
+        vector_t CA{C, A};
+        vector_t CO{C, O};
+        vector_t v3 = CA.vector_multiply(CO);
+
+        double scalar1 = v1.scalar_multiply(v2);
+        double scalar2 = v2.scalar_multiply(v3);
+        double scalar3 = v1.scalar_multiply(v3);
+
+        if (scalar1 >= 0 && scalar2 >= 0 && scalar3 >= 0)
+            return true;
+
+        if (scalar1 < 0 && scalar2 < 0 && scalar3 < 0)
+            return true;
+        
+        return false;
+    }
+
 
 //  =========================== Point functions ===========================
-
-    point_t::point_t(const double x, const double y, const double z) : x_(x), y_(y), z_(z) {}
-    point_t::point_t(const point_t &point) : x_(point.x_), y_(point.y_), z_(point.z_) {}
 
     void point_t::print() const
     {
@@ -130,29 +162,32 @@ namespace geometry
 
     plane_t::plane_t(const point_t &p1, const point_t &p2, const point_t &p3)
     {
-        double x1 = p1.x_;
-        double y1 = p1.y_;
-        double z1 = p1.z_;
-        double delta_x2 = p2.x_ - p1.x_;
-        double delta_y2 = p2.y_ - p1.y_;
-        double delta_z2 = p2.z_ - p1.z_;
-        double delta_x3 = p3.x_ - p1.x_;
-        double delta_y3 = p3.y_ - p1.y_;
-        double delta_z3 = p3.z_ - p1.z_;
+        vector_t v1{p1.x_, p1.y_, p1.z_};
 
-        a_ = delta_y2 * delta_z3 - delta_y3 * delta_z2;
-        b_ = delta_z2 * delta_x3 - delta_z3 * delta_x2;
-        c_ = delta_y2 * delta_z3 - delta_y3 * delta_z2;
-        d_ = -x1 * a_ - y1 * b_ - z1 * c_;
+        vector_t v2{p1, p2};
+        vector_t v3{p1, p3};
+
+        a_ = v2.y_ * v3.z_ - v2.z_ * v3.y_;
+        b_ = v2.z_ * v3.x_ - v2.x_ * v3.z_;
+        c_ = v2.z_ * v3.x_ - v2.x_ * v3.z_;
+        d_ = -v1.x_ * a_ - v1.y_ * b_ - v1.z_ * c_;
     }
 
-//  ========================== Intersection functions ==========================
-    intersection::intersection(const point_t &point)
+
+//  =========================== Vector functions ============================
+
+    vector_t vector_t::vector_multiply(const vector_t& other) const
     {
-        type_ = intersection::type::POINT;
-        point_ = point;
+        vector_t ret_v{ this->y_ * other.z_ - this->z_ * other.y_, 
+                      -(this->x_ * other.z_ - this->z_ * other.x_), 
+                        this->x_ * other.y_ - this->y_ * other.x_ };
+
+        return ret_v;
     }
 
-    
+    double vector_t::scalar_multiply(const vector_t& other) const
+    {
+        return (this->x_ * other.x_ + this->y_ * other.y_ + this->z_ * other.z_);
+    }
 
 } // namespace geometry

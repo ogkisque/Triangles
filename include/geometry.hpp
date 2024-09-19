@@ -18,8 +18,24 @@ namespace geometry {
         bool operator==(const point_t& other_p) const;
 
         point_t(const double x, const double y, const double z) : x_(x), y_(y), z_(z) {}
-        point_t(const point_t &point);
+        point_t(const point_t &point) : x_(point.x_), y_(point.y_), z_(point.z_) {}
+
     }; // class point_t
+
+    class vector_t
+    {
+    public:
+        double x_ = 0;
+        double y_ = 0;
+        double z_ = 0;
+
+        vector_t() = default;
+        vector_t(const point_t& p1, const point_t& p2) : x_(p2.x_ - p1.x_), y_(p2.y_ - p1.y_), z_(p2.z_ - p1.z_) {}
+        vector_t(const double x, const double y, const double z) : x_(x), y_(y), z_(z) {}
+        
+        vector_t vector_multiply(const vector_t& other) const;
+        double   scalar_multiply(const vector_t& other) const;
+    }; // class vector_t
 
     class line_t
     {
@@ -36,6 +52,17 @@ namespace geometry {
         line_t(const point_t &p1, const point_t &p2);
     }; // class line_t
 
+    class plane_t
+    {
+    public:
+        double a_ = 0;
+        double b_ = 0;
+        double c_ = 0;
+        double d_ = 0;
+
+        plane_t(const point_t &p1, const point_t &p2, const point_t &p3);
+    }; // class plane_t
+
     class triangle_t 
     {
     public:
@@ -49,18 +76,9 @@ namespace geometry {
         triangle_t(const point_t &p1, const point_t &p2, const point_t &p3, int id);
     }; // class triangle_t
 
-    class plane_t
-    {
-    public:
-        double a_ = 0;
-        double b_ = 0;
-        double c_ = 0;
-        double d_ = 0;
+    bool  point_belongs_to_line(const point_t& p, const line_t& l);
+    bool point_belongs_to_plane(const point_t& p, const triangle_t& t);
 
-        plane_t(const point_t &p1, const point_t &p2, const point_t &p3);
-    }; // class plane_t
-
-    bool point_belongs_to_line(const point_t& p, const line_t& l);
 
 
 } // namespace geometry
