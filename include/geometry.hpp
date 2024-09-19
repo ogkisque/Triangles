@@ -78,8 +78,10 @@ namespace geometry {
         triangle_t(const point_t &p1, const point_t &p2, const point_t &p3, int id);
     }; // class triangle_t
 
+    bool is_point_on_segment(const point_t& p, const line_t& l);
     bool is_point_on_line(const point_t& p, const line_t& l);
     bool is_point_in_triangle(const point_t& p, const triangle_t& t);
+    
     bool is_line_intersect_line(const line_t &line1, const line_t &line2);
     bool is_line_intersect_triangle_2d(const line_t &line, const triangle_t &triangle);
     std::variant<nullptr_t, point_t, line_t> intersect(const line_t &line, const plane_t &plane);

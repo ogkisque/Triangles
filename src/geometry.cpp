@@ -1,6 +1,5 @@
 #include "geometry.hpp"
 
-
 namespace
 {
     const double EPS = std::numeric_limits<double>::epsilon();
@@ -16,7 +15,7 @@ namespace geometry
 
 //  General functions
 
-    bool is_point_on_line(const point_t& p, const line_t& l) // принадлежит ли точка отрезку
+    bool is_point_on_line(const point_t& p, const line_t& l, bool is_on_segment)
     {
         double param1 = 0;
         double param2 = 0;
@@ -49,7 +48,10 @@ namespace geometry
         if (!(temp_point == p))
             return false;
 
-        return std::min(param1, param2) < cur_param < std::max(param1, param2);
+        if (is_on_segment)
+            return std::min(param1, param2) < cur_param < std::max(param1, param2); 
+
+        return true;
     }
 
     bool is_point_in_triangle(const point_t& p, const triangle_t& t)
@@ -129,32 +131,32 @@ namespace geometry
         else
             param3 = std::numeric_limits<double>::max();
 
+
+
+
+
         if (k1 == k2 == k3) // parallel or identic
         {
-            if (is_point_on_line(line1.p1_, line2)) 
+            if (is_point_on_line(line1.p1_, line2, false)) // identic lines
             {
+                return is_point_on_line(line1.p1_, line2, true) || is_point_on_line(line1.p2_, line2, true);
 
             }
-            if (param1 == param2 == param3)
+            else
             {
-                if (param1 == std::numeric_limits<double>::max())
-                {
-                    return 
-                }
-                else // different a, b, c 
-                {
-                    
-                }
+                return false;
             }
         }
         else // intersect
         {
+            assert(("Lines are not in the plane", (param1 == param2 == param3)));
+
             point_t intersect_point{line1.p1_.x_ + param1 * line1.a_,
                                     line1.p1_.y_ + param1 * line1.b_,
                                     line1.p1_.z_ + param1 * line1.c_};
 
-            return is_point_on_line(intersect_point, line1) &&
-                   is_point_on_line(intersect_point, line2);
+            return is_point_on_segment(intersect_point, line1) &&
+                   is_point_on_segment(intersect_point, line2);
         }
         
 
@@ -163,12 +165,9 @@ namespace geometry
 
     bool is_line_intersect_triangle_2d(const line_t &line, const triangle_t &triangle)
     {
-        if (is_line_intersect_line(line, triangle.l1_))
-            return true;
-        if (is_line_intersect_line(line, triangle.l2_))
-            return true;
-        if (is_line_intersect_line(line, triangle.l3_))
-            return true;
+        return is_line_intersect_line(line, triangle.l1_) ||
+               is_line_intersect_line(line, triangle.l2_) ||
+               is_line_intersect_line(line, triangle.l3_);
     }
 
     std::variant<nullptr_t, point_t, line_t> intersect(const line_t &line, const plane_t &plane)
@@ -191,7 +190,7 @@ namespace geometry
                                    line.p1_.y_ + param * line.b_,
                                    line.p1_.z_ + param * line.c_};
             
-            if (is_point_on_line(point_on_plane, line))
+            if (is_point_on_segment(point_on_plane, line))
                 return point_on_plane;
             else
                 return nullptr;
@@ -211,17 +210,16 @@ namespace geometry
                 return is_point_in_triangle(std::get<point_t>(intersection), triangle);
             case 2:
                 return is_line_intersect_triangle_2d(std::get<line_t>(intersection), triangle);
-        }   
+            default:
+                assert(("incorect std::variant type", 0));
+        }
     }
 
     bool is_triangle_intersect_triangle(const triangle_t &triangle1, const triangle_t &triangle2)
     {
-        if (intersect(triangle1.l1_, triangle2))
-            return true;
-        if (intersect(triangle1.l2_, triangle2))
-            return true;
-        if (intersect(triangle1.l3_, triangle2))
-            return true;
+        return intersect(triangle1.l1_, triangle2) ||
+               intersect(triangle1.l2_, triangle2) ||
+               intersect(triangle1.l3_, triangle2);
     }
 
 
