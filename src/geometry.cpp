@@ -132,9 +132,6 @@ namespace geometry
             param3 = std::numeric_limits<double>::max();
 
 
-
-
-
         if (k1 == k2 == k3) // parallel or identic
         {
             if (is_point_on_line(line1.p1_, line2, false)) // identic lines
@@ -155,8 +152,8 @@ namespace geometry
                                     line1.p1_.y_ + param1 * line1.b_,
                                     line1.p1_.z_ + param1 * line1.c_};
 
-            return is_point_on_segment(intersect_point, line1) &&
-                   is_point_on_segment(intersect_point, line2);
+            return is_point_on_line(intersect_point, line1, true) &&
+                   is_point_on_line(intersect_point, line2, true);
         }
         
 
@@ -190,7 +187,7 @@ namespace geometry
                                    line.p1_.y_ + param * line.b_,
                                    line.p1_.z_ + param * line.c_};
             
-            if (is_point_on_segment(point_on_plane, line))
+            if (is_point_on_line(point_on_plane, line, true))
                 return point_on_plane;
             else
                 return nullptr;
@@ -272,7 +269,7 @@ namespace geometry
 
 //  =========================== Triangle functions ===========================
 
-    triangle_t::triangle_t(const point_t &p1, const point_t &p2, const point_t &p3, int id) :
+    triangle_t::triangle_t(const point_t &p1, const point_t &p2, const point_t &p3, size_t id) :
             p1_(p1), p2_(p2), p3_(p3),
             l1_(p1, p2), l2_(p2, p3), l3_(p3, p1),
             plane_(p1, p2, p3), id_(id)
