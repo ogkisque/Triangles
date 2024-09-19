@@ -30,8 +30,8 @@ namespace geometry {
         double z_ = 0;
 
         vector_t() = default;
-        vector_t(const point_t& p1, const point_t& p2) : x_(p2.x_ - p1.x_), y_(p2.y_ - p1.y_), z_(p2.z_ - p1.z_) {}
-        vector_t(const double x, const double y, const double z) : x_(x), y_(y), z_(z) {}
+        vector_t(const point_t& p1, const point_t& p2);
+        vector_t(const double x, const double y, const double z);
         
         vector_t vector_multiply(const vector_t& other) const;
         double   scalar_multiply(const vector_t& other) const;
@@ -60,6 +60,8 @@ namespace geometry {
         double c_ = 0;
         double d_ = 0;
 
+        bool is_valid() const;
+
         plane_t(const point_t &p1, const point_t &p2, const point_t &p3);
     }; // class plane_t
 
@@ -76,9 +78,11 @@ namespace geometry {
         triangle_t(const point_t &p1, const point_t &p2, const point_t &p3, int id);
     }; // class triangle_t
 
-    bool  point_belongs_to_line(const point_t& p, const line_t& l);
-    bool point_belongs_to_plane(const point_t& p, const triangle_t& t);
-
-
+    bool is_point_on_line(const point_t& p, const line_t& l);
+    bool is_point_in_triangle(const point_t& p, const triangle_t& t);
+    bool is_line_intersect_line(const line_t &line1, const line_t &line2);
+    bool is_line_intersect_triangle_2d(const line_t &line, const triangle_t &triangle);
+    std::variant<nullptr_t, point_t, line_t> intersect(const line_t &line, const plane_t &plane);
+    bool intersect(const line_t &line, const triangle_t &triangle);
 
 } // namespace geometry
