@@ -4,9 +4,35 @@ namespace
 {
     const double EPS = std::numeric_limits<double>::epsilon();
     const double MAX = std::numeric_limits<double>::max();
-    bool equald(const double x, const double y)
+
+    bool is_zero(const double x)
+    {
+        return std::fabs(x) < EPS;
+    }
+
+    inline bool equald(const double x, const double y)
     {
         return std::fabs(x - y) < EPS;
+    }
+
+    bool is_more_zero(const double x)
+    {
+        return x > EPS;
+    }
+
+    bool is_less_zero(const double x)
+    {
+        return x < -EPS;
+    }
+
+    bool is_more_or_equal_zero(const double x)
+    {
+        return is_more_zero(x) || is_zero(x);
+    }
+
+    bool is_less_or_equal_zero(const double x)
+    {
+        return is_less_zero(x) || is_zero(x);
     }
 }
 
@@ -17,23 +43,18 @@ namespace geometry
 
     bool is_point_on_line(const point_t& p, const line_t& l, bool is_on_segment)
     {
-        double param1 = 0;
-        double param2 = 0;
         double cur_param = 0;
         
-        if (!equald(l.a_, 0))
+        if (!is_zero(l.a_))
         {
-            param2 = (l.p2_.x_ - l.p1_.x_) / l.a_;
             cur_param = (p.x_ - l.p1_.x_) / l.a_;
         }
-        else if (!equald(l.b_, 0))
+        else if (!is_zero(l.b_))
         {
-            param2 = (l.p2_.y_ - l.p1_.y_) / l.b_;
             cur_param = (p.y_ - l.p1_.y_) / l.b_;
         }
-        else if (!equald(l.c_, 0))
+        else if (!is_zero(l.c_))
         {
-            param2 = (l.p2_.z_ - l.p1_.z_) / l.c_;
             cur_param = (p.z_ - l.p1_.z_) / l.c_;
         }
         else
@@ -49,17 +70,16 @@ namespace geometry
             return false;
 
         if (is_on_segment)
-            return std::min(param1, param2) < cur_param < std::max(param1, param2); 
+            return 0 <= cur_param && cur_param <= 1; 
 
         return true;
     }
 
     bool is_point_in_triangle(const point_t& p, const triangle_t& t)
-    {
-        plane_t plane = t.plane_;
-        double temp = plane.a_ * p.x_ + plane.b_ * p.y_ + plane.c_ * p.z_ + plane.d_;
+    {       
+        double plane_equation = t.plane_.a_ * p.x_ + t.plane_.b_ * p.y_ + t.plane_.c_ * p.z_ + t.plane_.d_;
         
-        if (!equald(temp, 0))
+        if (!is_zero(plane_equation))
             return false;
         
         point_t A = t.p1_, B = t.p2_, C = t.p3_, O = p;
@@ -78,12 +98,12 @@ namespace geometry
 
         double scalar1 = v1.scalar_multiply(v2);
         double scalar2 = v2.scalar_multiply(v3);
-        double scalar3 = v1.scalar_multiply(v3);
+        double scalar3 = v3.scalar_multiply(v1);
 
-        if (((scalar1 > EPS) || (equald(scalar1, 0))) && ((scalar2 > EPS) || (equald(scalar2, 0))) && ((scalar3 > EPS) || (equald(scalar3, 0))))
+        if (is_more_or_equal_zero(scalar1) && is_more_or_equal_zero(scalar2) && is_more_or_equal_zero(scalar3))
             return true;
 
-        if (((scalar1 < -EPS) || (equald(scalar1, 0))) && ((scalar2 < -EPS) || (equald(scalar2, 0))) && ((scalar3 < -EPS) || (equald(scalar3, 0))))
+        if (is_less_or_equal_zero(scalar1) && is_less_or_equal_zero(scalar2) && is_less_or_equal_zero(scalar3))
             return true;
         
         return false;
@@ -93,72 +113,144 @@ namespace geometry
     {
         assert(("Data is not valid", line1.is_valid() && line2.is_valid()));
 
-        double param1 = 0;
-        double param2 = 0;
-        double param3 = 0;
+        line1.print();
+        line2.print();
 
-        double k1 = 0;
-        double k2 = 0;
-        double k3 = 0;
+        vector_t tangent1{line1.a_, line1.b_, line2.c_};
+        vector_t tangent2{line2.a_, line2.b_, line2.c_};
 
-        if (!equald(line1.a_, 0))
-            k1 = line2.a_ / line1.a_;
-        else
-            k1 = MAX;
-        
-        if (!equald(line1.b_, 0))
-            k2 = line2.b_ / line1.b_;
-        else
-            k2 = MAX;
+        vector_t vec_multiply = tangent1.vector_multiply(tangent2);
 
-        if (!equald(line1.c_, 0))
-            k3 = line2.c_ / line1.c_;
-        else
-            k3 = MAX;
-
-        if (!equald(line1.a_, line2.a_))
-            param1 = (line1.p1_.x_ - line2.p1_.x_) / (line2.a_ - line1.a_);
-        else
-            param1 = MAX;
-
-        if (!equald(line1.b_, line2.b_))
-            param2 = (line1.p1_.y_ - line2.p1_.y_) / (line2.b_ - line1.b_);
-        else
-            param2 = MAX;
-
-        if (!equald(line1.c_, line2.c_))
-            param3 = (line1.p1_.z_ - line2.p1_.z_) / (line2.c_ - line1.c_);
-        else
-            param3 = MAX;
-
-
-
-
-        if (k1 == k2 == k3) // parallel or identic
+        if (vec_multiply.is_null()) // parallel or identic
         {
             if (is_point_on_line(line1.p1_, line2, false)) // identic lines
             {
                 return is_point_on_line(line1.p1_, line2, true) || is_point_on_line(line1.p2_, line2, true);
             }
+
+            // parallel
+            return false;
+        }
+
+        // intersect
+        
+        point_t start1 = line1.p1_;
+        point_t start2 = line1.p2_;
+
+        double param1 = 0;
+        double param2 = 0;
+
+
+        if (!is_zero(line1.a_))
+        {
+            double coef1 = line1.a_ * line2.b_ - line1.b_ * line2.a_;
+            double free_coef1 = line1.a_ * (start1.y_ - start2.y_) - line1.b_ * (start1.x_ - start2.x_);
+            
+            if (is_zero(coef1))
+            {
+                if (!is_zero(free_coef1))
+                    assert(("param2 not exist", 0));
+                else
+                {
+                    double coef2 = line1.b_ * line2.c_ - line1.c_ * line2.b_;
+                    double free_coef2 = line1.b_ * (start1.z_ - start2.z_) - line1.c_ * (start1.y_ - start2.y_);
+                    
+                    // param2 = 0;
+                }
+            }
             else
             {
-                return false;
+                param2 = free_coef1 / coef1;
             }
+            param1 = (start2.x_ - start1.x_ + line1.a_ * param1) / line1.a_;
+            
+            printf("param1 = %lg, param2 = %lg\n", param1, param2);
+
+            // if (!equald(start1.z_ + line1.c_ * param1, start2.z_ + line2.c_ * param2))
+            //     return false;
         }
-        else // intersect
+        else if (!is_zero(line1.b_))
         {
-            assert(("Lines are not in the plane", (param1 == param2 == param3)));
+            // double coef = line1.b_ * line2.c_ - line1.c_ * line2.b_;
+            // double free_coef = line1.b_ * (start1.z_ - start2.z_) - line1.c_ * (start1.y_ - start2.y_);
 
-            point_t intersect_point{line1.p1_.x_ + param1 * line1.a_,
-                                    line1.p1_.y_ + param1 * line1.b_,
-                                    line1.p1_.z_ + param1 * line1.c_};
+            double coef1 = line2.a_;
+            double free_coef1 = start1.x_ - start2.x_;
 
-            return is_point_on_line(intersect_point, line1, true) &&
-                   is_point_on_line(intersect_point, line2, true);
+            if (is_zero(coef1))
+            {
+                if (!is_zero(free_coef1))
+                    assert(("param2 not exist", 0));
+                else
+                {
+                    double coef2 = line1.b_ * line2.c_ - line1.c_ * line2.b_;
+                    double free_coef2 = line1.b_ * (start1.z_ - start2.z_) - line1.c_ * (start1.y_ - start2.y_);
+                    
+                    // param2 = 0;
+                }
+            }
+            else
+            {
+                param2 = free_coef1 / coef1;
+            }
+
+            param1 = (start2.y_ - start1.y_ + line2.b_ * param2) / line1.b_;
+
+            if (!equald(start1.z_ + line1.c_ * param1, start2.z_ + line2.c_ * param2))
+                return false;
+            
+            printf("param1 = %lg, param2 = %lg\n", param1, param2);
         }
-        
+        else if (!is_zero(line1.c_))
+        {
+            double coef1 = line1.a_;
+            double free_coef1 = start1.x_ - start2.x_;
+            
+            if (is_zero(coef1))
+            {
+                if (!is_zero(free_coef1))
+                    assert(("param2 not exist", 0));
+                else
+                {
+                    double coef2 = line1.b_;
+                    double free_coef2 = start1.y_ - start2.y_;
 
-        return false;
+                    if (is_zero(coef2))
+                    {
+                        assert(("param2 not exist", 0));
+                    }
+                    else
+                    {
+                        param2 = free_coef2 / coef2;
+                    }
+                }
+            }
+            else
+            {
+                param2 = free_coef1 / coef1;
+            }
+
+            // if (!equald(start1.y_, start2.y_ + line2.b_ * param2))
+            //     return false;
+            
+            param1 = (start2.z_ - start1.z_ + line2.c_ * param2) / line1.c_; 
+
+            printf("param1 = %lg, param2 = %lg\n", param1, param2);
+        }
+        else
+        {
+            assert(("line1 is not valid", 0));
+        }
+
+        printf("param1 = %lg, param2 = %lg\n", param1, param2);
+
+        point_t p1{start1.x_ + line1.a_ * param1, start1.y_ + line1.b_ * param1, start1.z_ + line1.c_ * param1};
+        point_t p2{start2.x_ + line2.a_ * param2, start2.y_ + line2.b_ * param2, start2.z_ + line2.c_ * param2};
+
+        p1.print();
+        p2.print();
+
+        return (p1 == p2);
     }
 
     bool is_line_intersect_triangle_2d(const line_t &line, const triangle_t &triangle)
@@ -174,9 +266,10 @@ namespace geometry
 
         double tmp1 = line.a_ * plane.a_ + line.b_ * plane.b_ + line.c_ * plane.c_;
         double tmp2 = plane.a_ * line.p1_.x_ + plane.b_ * line.p1_.y_ + plane.c_ * line.p1_.z_ + plane.d_; // function
-        if (tmp1 == 0)
+        
+        if (is_zero(tmp1))
         {
-            if (tmp2 == 0)  // line on plane
+            if (is_zero(tmp2))  // line on plane
                 return line;
             else            // line parallel to plane
                 return nullptr;
@@ -228,7 +321,7 @@ namespace geometry
 
     void point_t::print() const
     {
-        std::cout << "( " << x_ << " ; " << y_ << " )" << std::endl;
+        std::cout << "(" << x_ << "; " << y_ << "; " << z_ << ")" << std::endl;
     }
 
     bool point_t::operator==(const point_t &other) const
@@ -260,7 +353,10 @@ namespace geometry
         std::cout << "line:" << std::endl <<
         "x = " << p1_.x_ << " + t * " << a_ << std::endl <<
         "y = " << p1_.y_ << " + t * " << b_ << std::endl <<
-        "z = " << p1_.z_ << " + t * " << c_ << std::endl;
+        "z = " << p1_.z_ << " + t * " << c_ << std::endl <<
+        "segment:" << std::endl;
+        p1_.print();
+        p2_.print();
     }
 
     double line_t::get_length() const
@@ -300,15 +396,14 @@ namespace geometry
 
     plane_t::plane_t(const point_t &p1, const point_t &p2, const point_t &p3)
     {
-        vector_t v1{p1.x_, p1.y_, p1.z_};
+        vector_t p1p2{p1, p2};
+        vector_t p1p3{p1, p3};
 
-        vector_t v2{p1, p2};
-        vector_t v3{p1, p3};
-
-        a_ = v2.y_ * v3.z_ - v2.z_ * v3.y_;
-        b_ = v2.z_ * v3.x_ - v2.x_ * v3.z_;
-        c_ = v2.z_ * v3.x_ - v2.x_ * v3.z_;
-        d_ = -v1.x_ * a_ - v1.y_ * b_ - v1.z_ * c_;
+        a_ =   p1p2.y_ * p1p3.z_ - p1p3.y_ * p1p2.z_;
+        b_ = - p1p2.x_ * p1p3.z_ + p1p3.x_ * p1p2.z_;
+        c_ =   p1p2.x_ * p1p3.y_ - p1p3.x_ * p1p2.y_;
+        
+        d_ = - p1.x_ * a_ - p1.y_ * b_ - p1.z_ * c_;
     }
 
     bool plane_t::is_valid() const
@@ -324,6 +419,11 @@ namespace geometry
                                                                z_(p2.z_ - p1.z_) 
                                                                {}
     vector_t::vector_t(const double x, const double y, const double z) : x_(x), y_(y), z_(z) {}
+
+    bool vector_t::is_null() const
+    {
+        return !(x_ || y_ || z_);
+    }
 
     vector_t vector_t::vector_multiply(const vector_t& other) const
     {

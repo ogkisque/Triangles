@@ -56,13 +56,26 @@ namespace
 
 int main()
 {
-    std::vector<geometry::triangle_t> triangles;
-    size_t num_triangles = input_triangles(triangles);
-    if (num_triangles < 1) return 1;
+    geometry::point_t p1{0, 0, 0};
+    geometry::point_t p2{4, 1, 0};
 
-    std::set<size_t> intersect_triangles_id;
-    intersect_triangles(triangles, num_triangles, intersect_triangles_id);
+    geometry::line_t  l1{p1, p2};
 
-    for (auto id : intersect_triangles_id)
-        std::cout << id << std::endl;
+    geometry::point_t p3{0, 0, 5};
+    geometry::point_t p4{4, 1,-3};
+    
+    geometry::line_t  l2{p3, p4};
+
+    if (geometry::is_line_intersect_line(l1, l2))
+        std::cout << "ABOBA" << std::endl;
+
+    // std::vector<geometry::triangle_t> triangles;
+    // size_t num_triangles = input_triangles(triangles);
+    // if (num_triangles < 1) return 1;
+
+    // std::set<size_t> intersect_triangles_id;
+    // intersect_triangles(triangles, num_triangles, intersect_triangles_id);
+
+    // for (auto id : intersect_triangles_id)
+    //     std::cout << id << std::endl;
 }
