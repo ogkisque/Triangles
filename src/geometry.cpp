@@ -131,6 +131,9 @@ namespace geometry
         else
             param3 = MAX;
 
+
+
+
         if (k1 == k2 == k3) // parallel or identic
         {
             if (is_point_on_line(line1.p1_, line2, false)) // identic lines
@@ -170,7 +173,7 @@ namespace geometry
         assert(("Data is not valid", line.is_valid() && plane.is_valid()));
 
         double tmp1 = line.a_ * plane.a_ + line.b_ * plane.b_ + line.c_ * plane.c_;
-        double tmp2 = plane.a_ * line.p1_.x_ + plane.b_ * line.p1_.y_ + plane.c_ * line.p1_.z_ + plane.d_;
+        double tmp2 = plane.a_ * line.p1_.x_ + plane.b_ * line.p1_.y_ + plane.c_ * line.p1_.z_ + plane.d_; // function
         if (tmp1 == 0)
         {
             if (tmp2 == 0)  // line on plane
@@ -316,7 +319,10 @@ namespace geometry
 
 //  =========================== Vector functions ============================
 
-    vector_t::vector_t(const point_t& p1, const point_t& p2) : x_(p2.x_ - p1.x_), y_(p2.y_ - p1.y_), z_(p2.z_ - p1.z_) {}
+    vector_t::vector_t(const point_t& p1, const point_t& p2) : x_(p2.x_ - p1.x_), 
+                                                               y_(p2.y_ - p1.y_), 
+                                                               z_(p2.z_ - p1.z_) 
+                                                               {}
     vector_t::vector_t(const double x, const double y, const double z) : x_(x), y_(y), z_(z) {}
 
     vector_t vector_t::vector_multiply(const vector_t& other) const
