@@ -3,7 +3,7 @@
 namespace
 {
     const double EPS = std::numeric_limits<double>::epsilon();
-
+    const double MAX = std::numeric_limits<double>::max();
     bool equald(const double x, const double y)
     {
         return std::fabs(x - y) < EPS;
@@ -104,33 +104,32 @@ namespace geometry
         if (!equald(line1.a_, 0))
             k1 = line2.a_ / line1.a_;
         else
-            k1 = std::numeric_limits<double>::max();
+            k1 = MAX;
         
         if (!equald(line1.b_, 0))
             k2 = line2.b_ / line1.b_;
         else
-            k2 = std::numeric_limits<double>::max();
+            k2 = MAX;
 
         if (!equald(line1.c_, 0))
             k3 = line2.c_ / line1.c_;
         else
-            k3 = std::numeric_limits<double>::max();
+            k3 = MAX;
 
         if (!equald(line1.a_, line2.a_))
             param1 = (line1.p1_.x_ - line2.p1_.x_) / (line2.a_ - line1.a_);
         else
-            param1 = std::numeric_limits<double>::max();
+            param1 = MAX;
 
         if (!equald(line1.b_, line2.b_))
             param2 = (line1.p1_.y_ - line2.p1_.y_) / (line2.b_ - line1.b_);
         else
-            param2 = std::numeric_limits<double>::max();
+            param2 = MAX;
 
         if (!equald(line1.c_, line2.c_))
             param3 = (line1.p1_.z_ - line2.p1_.z_) / (line2.c_ - line1.c_);
         else
-            param3 = std::numeric_limits<double>::max();
-
+            param3 = MAX;
 
         if (k1 == k2 == k3) // parallel or identic
         {
@@ -221,6 +220,9 @@ namespace geometry
 
 
 //  =========================== Point functions ===========================
+
+    point_t::point_t(const double x, const double y, const double z) : x_(x), y_(y), z_(z) {}
+    point_t::point_t(const point_t &point) : x_(point.x_), y_(point.y_), z_(point.z_) {}
 
     void point_t::print() const
     {

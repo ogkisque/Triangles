@@ -17,8 +17,8 @@ namespace geometry {
         void print()                            const;
         bool operator==(const point_t& other_p) const;
 
-        point_t(const double x, const double y, const double z) : x_(x), y_(y), z_(z) {}
-        point_t(const point_t &point) : x_(point.x_), y_(point.y_), z_(point.z_) {}
+        point_t(const double x, const double y, const double z);
+        point_t(const point_t& other);
 
     }; // class point_t
 
