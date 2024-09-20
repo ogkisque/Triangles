@@ -136,7 +136,6 @@ namespace geometry
             if (is_point_on_line(line1.p1_, line2, false)) // identic lines
             {
                 return is_point_on_line(line1.p1_, line2, true) || is_point_on_line(line1.p2_, line2, true);
-
             }
             else
             {
