@@ -80,7 +80,7 @@ namespace geometry
         double scalar2 = v2.scalar_multiply(v3);
         double scalar3 = v1.scalar_multiply(v3);
 
-        if (scalar1 > EPS && scalar2 > EPS && scalar3 > EPS)
+        if (scalar1 >= EPS && scalar2 >= EPS && scalar3 >= EPS)
             return true;
 
         if (scalar1 < EPS && scalar2 < EPS && scalar3 < EPS)
