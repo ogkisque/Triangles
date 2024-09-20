@@ -12,24 +12,17 @@
 
 TEST(test1, is_point_on_line_test)
 {
-    point_t p1{1, 2, 3};
-    point_t p2{3, 4, 5};
-    linet_t l{p1, p2};
+    geometry::point_t p1{1, 2, 3};
+    geometry::point_t p2{3, 4, 5};
+    geometry::line_t l{p1, p2};
 
-    point_t p3{9, 10, 11};
+    geometry::point_t p3{9, 10, 11};
 
-    ASSERT_EQ(is_point_on_line(p3, l, false), true);
-    ASSERT_EQ(is_point_on_line(p3, l, true), false);
+    ASSERT_EQ(geometry::is_point_on_line(p3, l, false), true);
+    ASSERT_EQ(geometry::is_point_on_line(p3, l, true), false);
 }
 
 TEST(test2, is_point_on_line_test)
 {
-    point_t p1{1, 2, 3};
-    point_t p2{3, 4, 5};
-    linet_t l{p1, p2};
 
-    point_t p3{9, 10, 11};
-
-    ASSERT_EQ(is_point_on_line(p3, l, false), true);
-    ASSERT_EQ(is_point_on_line(p3, l, true), false);
 }
