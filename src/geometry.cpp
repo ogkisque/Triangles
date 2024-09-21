@@ -113,144 +113,70 @@ namespace geometry
     {
         assert(("Data is not valid", line1.is_valid() && line2.is_valid()));
 
-        line1.print();
-        line2.print();
-
-        vector_t tangent1{line1.a_, line1.b_, line2.c_};
+        vector_t tangent1{line1.a_, line1.b_, line1.c_};
         vector_t tangent2{line2.a_, line2.b_, line2.c_};
-
         vector_t vec_multiply = tangent1.vector_multiply(tangent2);
 
         if (vec_multiply.is_null()) // parallel or identic
         {
             if (is_point_on_line(line1.p1_, line2, false)) // identic lines
-            {
                 return is_point_on_line(line1.p1_, line2, true) || is_point_on_line(line1.p2_, line2, true);
-            }
 
-            // parallel
+            // parallel lines
             return false;
         }
 
         // intersect
         
-        point_t start1 = line1.p1_;
-        point_t start2 = line1.p2_;
+        double a1 = line1.a_;
+        double b1 = line1.b_;
+        double c1 = line1.c_;
+        double a2 = line2.a_;
+        double b2 = line2.b_;
+        double c2 = line2.c_;
+        double x1 = line1.p1_.x_;
+        double y1 = line1.p1_.y_;
+        double z1 = line1.p1_.z_;
+        double x2 = line2.p1_.x_;
+        double y2 = line2.p1_.y_;
+        double z2 = line2.p1_.z_;
 
-        double param1 = 0;
-        double param2 = 0;
-
-
-        if (!is_zero(line1.a_))
+        double det_xy = a2 * b1 - a1 * b2;
+        double det_xz = a2 * c1 - a1 * c2;
+        double det_yz = b2 * c1 - b1 * c2;
+        double det1 = 0;
+        double det2 = 0;
+        double det = 0;
+        if (!is_zero(det_xy))
         {
-            double coef1 = line1.a_ * line2.b_ - line1.b_ * line2.a_;
-            double free_coef1 = line1.a_ * (start1.y_ - start2.y_) - line1.b_ * (start1.x_ - start2.x_);
-            
-            if (is_zero(coef1))
-            {
-                if (!is_zero(free_coef1))
-                    assert(("param2 not exist", 0));
-                else
-                {
-                    double coef2 = line1.b_ * line2.c_ - line1.c_ * line2.b_;
-                    double free_coef2 = line1.b_ * (start1.z_ - start2.z_) - line1.c_ * (start1.y_ - start2.y_);
-                    
-                    // param2 = 0;
-                }
-            }
-            else
-            {
-                param2 = free_coef1 / coef1;
-            }
-            param1 = (start2.x_ - start1.x_ + line1.a_ * param1) / line1.a_;
-            
-            printf("param1 = %lg, param2 = %lg\n", param1, param2);
-
-            // if (!equald(start1.z_ + line1.c_ * param1, start2.z_ + line2.c_ * param2))
-            //     return false;
+            det1 = a2 * (y2 - y1) - b2 * (x2 - x1);
+            det2 = a1 * (y2 - y1) - b1 * (x2 - x1);
+            det = det_xy;
         }
-        else if (!is_zero(line1.b_))
+        else if (!is_zero(det_xz))
         {
-            // double coef = line1.b_ * line2.c_ - line1.c_ * line2.b_;
-            // double free_coef = line1.b_ * (start1.z_ - start2.z_) - line1.c_ * (start1.y_ - start2.y_);
-
-            double coef1 = line2.a_;
-            double free_coef1 = start1.x_ - start2.x_;
-
-            if (is_zero(coef1))
-            {
-                if (!is_zero(free_coef1))
-                    assert(("param2 not exist", 0));
-                else
-                {
-                    double coef2 = line1.b_ * line2.c_ - line1.c_ * line2.b_;
-                    double free_coef2 = line1.b_ * (start1.z_ - start2.z_) - line1.c_ * (start1.y_ - start2.y_);
-                    
-                    // param2 = 0;
-                }
-            }
-            else
-            {
-                param2 = free_coef1 / coef1;
-            }
-
-            param1 = (start2.y_ - start1.y_ + line2.b_ * param2) / line1.b_;
-
-            if (!equald(start1.z_ + line1.c_ * param1, start2.z_ + line2.c_ * param2))
-                return false;
-            
-            printf("param1 = %lg, param2 = %lg\n", param1, param2);
+            det1 = a2 * (z2 - z1) - c2 * (x2 - x1);
+            det2 = a1 * (z2 - z1) - c1 * (x2 - x1);
+            det = det_xz;
         }
-        else if (!is_zero(line1.c_))
+        else if (!is_zero(det_yz))
         {
-            double coef1 = line1.a_;
-            double free_coef1 = start1.x_ - start2.x_;
-            
-            if (is_zero(coef1))
-            {
-                if (!is_zero(free_coef1))
-                    assert(("param2 not exist", 0));
-                else
-                {
-                    double coef2 = line1.b_;
-                    double free_coef2 = start1.y_ - start2.y_;
-
-                    if (is_zero(coef2))
-                    {
-                        assert(("param2 not exist", 0));
-                    }
-                    else
-                    {
-                        param2 = free_coef2 / coef2;
-                    }
-                }
-            }
-            else
-            {
-                param2 = free_coef1 / coef1;
-            }
-
-            // if (!equald(start1.y_, start2.y_ + line2.b_ * param2))
-            //     return false;
-            
-            param1 = (start2.z_ - start1.z_ + line2.c_ * param2) / line1.c_; 
-
-            printf("param1 = %lg, param2 = %lg\n", param1, param2);
+            det1 = b2 * (z2 - z1) - c2 * (y2 - y1);
+            det2 = b1 * (z2 - z1) - c1 * (y2 - y1);
+            det = det_yz;
         }
         else
         {
-            assert(("line1 is not valid", 0));
+            assert(("Lines parallel", 0));
         }
 
-        printf("param1 = %lg, param2 = %lg\n", param1, param2);
+        double param1 = det1 / det;
+        double param2 = det2 / det;
 
-        point_t p1{start1.x_ + line1.a_ * param1, start1.y_ + line1.b_ * param1, start1.z_ + line1.c_ * param1};
-        point_t p2{start2.x_ + line2.a_ * param2, start2.y_ + line2.b_ * param2, start2.z_ + line2.c_ * param2};
+        std::cout << "det: " << det << " det1: " << det1 << " det2: " << det2 << " param1: " << param1 << " param2: " << param2 << std::endl;
 
-        p1.print();
-        p2.print();
-
-        return (p1 == p2);
+        return (is_more_or_equal_zero(param1) && is_less_or_equal_zero(param1 - 1)) &&
+               (is_more_or_equal_zero(param2) && is_less_or_equal_zero(param2 - 1));
     }
 
     bool is_line_intersect_triangle_2d(const line_t &line, const triangle_t &triangle)
@@ -423,6 +349,11 @@ namespace geometry
     bool vector_t::is_null() const
     {
         return !(x_ || y_ || z_);
+    }
+
+    void vector_t::print() const 
+    {
+        std::cout << "vector: " << x_ << " " << y_ << " " << z_ << std::endl;
     }
 
     vector_t vector_t::vector_multiply(const vector_t& other) const

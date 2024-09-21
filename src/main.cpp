@@ -56,26 +56,115 @@ namespace
 
 int main()
 {
-    geometry::point_t p1{0, 0, 0};
-    geometry::point_t p2{4, 1, 0};
+    if(1)
+    {
+        geometry::point_t p1{0, 0, 0};
+        geometry::point_t p2{4, 1, 0};
 
-    geometry::line_t  l1{p1, p2};
+        geometry::line_t  l1{p1, p2};
 
-    geometry::point_t p3{0, 0, 5};
-    geometry::point_t p4{4, 1,-3};
-    
-    geometry::line_t  l2{p3, p4};
+        geometry::point_t p3{0, 2, 0};
+        geometry::point_t p4{3,-1, 0};
 
-    if (geometry::is_line_intersect_line(l1, l2))
-        std::cout << "ABOBA" << std::endl;
+        geometry::line_t  l2{p3, p4};
 
-    // std::vector<geometry::triangle_t> triangles;
-    // size_t num_triangles = input_triangles(triangles);
-    // if (num_triangles < 1) return 1;
+        assert(geometry::is_line_intersect_line(l1, l2) == true);
+        std::cout << "CORRECT1\n";
+    }
 
-    // std::set<size_t> intersect_triangles_id;
-    // intersect_triangles(triangles, num_triangles, intersect_triangles_id);
+    if(2)
+    {
+        geometry::point_t p1{0, 0, 0};
+        geometry::point_t p2{4, 1, 0};
 
-    // for (auto id : intersect_triangles_id)
-    //     std::cout << id << std::endl;
+        geometry::line_t  l1{p1, p2};
+
+        geometry::point_t p3{0, 0, 5};
+        geometry::point_t p4{4, 1,-3};
+        
+        geometry::line_t  l2{p3, p4};
+
+        assert(geometry::is_line_intersect_line(l1, l2) == true);
+        std::cout << "CORRECT2\n";
+    }
+
+    if(3)
+    {
+        geometry::point_t p1{0, 0, 0};
+        geometry::point_t p2{4, 1, 0};
+
+        geometry::line_t  l1{p1, p2};
+
+        geometry::point_t p3{0, 0, 5};
+        geometry::point_t p4{2, 0.5, 0};
+        
+        geometry::line_t  l2{p3, p4};
+
+        assert(geometry::is_line_intersect_line(l1, l2) == true);
+        std::cout << "CORRECT3\n";
+    }
+
+    if(4)
+    {
+        geometry::point_t p1{0, 0, 0};
+        geometry::point_t p2{4, 1, 0};
+
+        geometry::line_t  l1{p1, p2};
+
+        geometry::point_t p3{-4, -1, 0};
+        geometry::point_t p4{8, 2, 0};
+        
+        geometry::line_t  l2{p3, p4};
+
+        assert(geometry::is_line_intersect_line(l1, l2) == true);
+        std::cout << "CORRECT4\n";
+    }
+
+    if(5)
+    {
+        geometry::point_t p1{0, 0, 0};
+        geometry::point_t p2{4, 1, 0};
+
+        geometry::line_t  l1{p1, p2};
+
+        geometry::point_t p3{-4, -1, 0};
+        geometry::point_t p4{-2, -0.5, 0};
+        
+        geometry::line_t  l2{p3, p4};
+
+        assert(geometry::is_line_intersect_line(l1, l2) == false);
+        std::cout << "CORRECT5\n";
+    }
+
+    if(6)
+    {
+        geometry::point_t p1{0, 0, 0};
+        geometry::point_t p2{4, 1, 0};
+
+        geometry::line_t  l1{p1, p2};
+
+        geometry::point_t p3{0, 1, 0};
+        geometry::point_t p4{4, 2, 0};
+        
+        geometry::line_t  l2{p3, p4};
+
+        assert(geometry::is_line_intersect_line(l1, l2) == false);
+        std::cout << "CORRECT6\n";
+    }
+
+    if(7)
+    {
+        geometry::point_t p1{0, 0, 0};
+        geometry::point_t p2{4, 1, 0};
+
+        geometry::line_t  l1{p1, p2};
+
+        geometry::point_t p3{0, 0, 5};
+        geometry::point_t p4{0, 0, 2};
+        
+        geometry::line_t  l2{p3, p4};
+
+        assert(geometry::is_line_intersect_line(l1, l2) == false);
+        std::cout << "CORRECT7\n";
+    }
 }
