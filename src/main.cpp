@@ -2,6 +2,7 @@
 #include <cassert>
 #include <vector>
 #include <set>
+#include <variant>
 
 #include "geometry.hpp"
 
@@ -21,13 +22,7 @@ namespace
             geometry::point_t point1{x1, y1, z1};
             geometry::point_t point2{x2, y2, z2};
             geometry::point_t point3{x3, y3, z3};
-            geometry::triangle_t triangle{point1, point2, point3, i};
-
-            if (!triangle.is_valid())
-            {
-                std::cout << "Incorrect data" << std::endl;
-                return -1;
-            }
+            geometry::triangle_t triangle{point1, point2, point3};
 
             triangles.push_back(triangle);
         }
@@ -45,8 +40,8 @@ namespace
             {
                 if (geometry::is_triangle_intersect_triangle(triangles[i], triangles[j]))
                 {
-                    intersect_triangles_id.insert(triangles[i].id_);
-                    intersect_triangles_id.insert(triangles[j].id_);
+                    intersect_triangles_id.insert(i);
+                    intersect_triangles_id.insert(j);
                 }
             }
         }
