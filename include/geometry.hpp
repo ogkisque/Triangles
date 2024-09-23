@@ -95,6 +95,7 @@ namespace geometry {
 
     std::variant<nullptr_t, point_t, line_t> intersect(const line_t &line, const plane_t &plane);
 
+
     figure_t figure_ctor(const point_t &point1, const point_t &point2, const point_t &point3);
 
 } // namespace geometry

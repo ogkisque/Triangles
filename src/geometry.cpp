@@ -27,6 +27,29 @@ namespace geometry
         }
     }
 
+    struct CallIntersectFigure
+    {
+        bool operator()(const point_t &point1)
+        {
+            return false;
+        }
+        bool operator()(const line_t &line1)
+        {
+            return intersect(line1, triangle2);;
+        }
+        bool operator()(const triangle_t &triangle1)
+        {
+            return is_triangle_intersect_triangle(triangle1, triangle2);
+        }
+
+        const triangle_t& triangle2;
+    };
+
+    bool intersect(const figure_t &fig1, const figure_t &fig2)
+    {
+        return std::visit(CallIntersectFigure{fig2}, fig1);
+    }
+
     bool is_point_on_line(const point_t& p, const line_t& l, bool is_on_segment)
     {
         double cur_param = 0;
