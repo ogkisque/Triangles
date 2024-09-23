@@ -56,13 +56,5 @@ namespace
 
 int main()
 {
-    std::vector<geometry::triangle_t> triangles;
-    size_t num_triangles = input_triangles(triangles);
-    if (num_triangles < 1) return 1;
-
-    std::set<size_t> intersect_triangles_id;
-    intersect_triangles(triangles, num_triangles, intersect_triangles_id);
-
-    for (auto id : intersect_triangles_id)
-        std::cout << id << std::endl;
+    
 }

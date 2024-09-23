@@ -33,8 +33,11 @@ namespace geometry {
         vector_t(const point_t& p1, const point_t& p2);
         vector_t(const double x, const double y, const double z);
         
+        bool     is_null() const;
+        void     print()   const;
         vector_t vector_multiply(const vector_t& other) const;
         double   scalar_multiply(const vector_t& other) const;
+        
     }; // class vector_t
 
     class line_t
@@ -46,7 +49,7 @@ namespace geometry {
         double c_ = 0;
     
         bool    is_valid()      const;
-        void    print()         const; 
+        void    print()         const;
         double  get_length()    const;
 
         line_t(const point_t &p1, const point_t &p2);
