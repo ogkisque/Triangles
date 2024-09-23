@@ -1,45 +1,7 @@
 #include "geometry.hpp"
 
-namespace
-{
-    const double EPS = std::numeric_limits<double>::epsilon();
-    const double MAX = std::numeric_limits<double>::max();
-
-    bool is_zero(const double x)
-    {
-        return std::fabs(x) < EPS;
-    }
-
-    inline bool equald(const double x, const double y)
-    {
-        return std::fabs(x - y) < EPS;
-    }
-
-    bool is_more_zero(const double x)
-    {
-        return x > EPS;
-    }
-
-    bool is_less_zero(const double x)
-    {
-        return x < -EPS;
-    }
-
-    bool is_more_or_equal_zero(const double x)
-    {
-        return is_more_zero(x) || is_zero(x);
-    }
-
-    bool is_less_or_equal_zero(const double x)
-    {
-        return is_less_zero(x) || is_zero(x);
-    }
-}
-
 namespace geometry
 {
-
-//  General functions
 
     figure_t figure_ctor(const point_t &point1, const point_t &point2, const point_t &point3)
     {
@@ -69,15 +31,15 @@ namespace geometry
     {
         double cur_param = 0;
         
-        if (!is_zero(l.a_))
+        if (!real_nums::is_zero(l.a_))
         {
             cur_param = (p.x_ - l.p1_.x_) / l.a_;
         }
-        else if (!is_zero(l.b_))
+        else if (!real_nums::is_zero(l.b_))
         {
             cur_param = (p.y_ - l.p1_.y_) / l.b_;
         }
-        else if (!is_zero(l.c_))
+        else if (!real_nums::is_zero(l.c_))
         {
             cur_param = (p.z_ - l.p1_.z_) / l.c_;
         }
@@ -103,7 +65,7 @@ namespace geometry
     {       
         double plane_equation = t.plane_.a_ * p.x_ + t.plane_.b_ * p.y_ + t.plane_.c_ * p.z_ + t.plane_.d_;
         
-        if (!is_zero(plane_equation))
+        if (!real_nums::is_zero(plane_equation))
             return false;
         
         point_t A = t.p1_, B = t.p2_, C = t.p3_, O = p;
@@ -124,10 +86,14 @@ namespace geometry
         double scalar2 = v2.scalar_multiply(v3);
         double scalar3 = v3.scalar_multiply(v1);
 
-        if (is_more_or_equal_zero(scalar1) && is_more_or_equal_zero(scalar2) && is_more_or_equal_zero(scalar3))
+        if (real_nums::is_more_or_equal_zero(scalar1) &&
+            real_nums::is_more_or_equal_zero(scalar2) && 
+            real_nums::is_more_or_equal_zero(scalar3))
             return true;
 
-        if (is_less_or_equal_zero(scalar1) && is_less_or_equal_zero(scalar2) && is_less_or_equal_zero(scalar3))
+        if (real_nums::is_less_or_equal_zero(scalar1) &&
+            real_nums::is_less_or_equal_zero(scalar2) && 
+            real_nums::is_less_or_equal_zero(scalar3))
             return true;
         
         return false;
@@ -171,19 +137,19 @@ namespace geometry
         double det1 = 0;
         double det2 = 0;
         double det = 0;
-        if (!is_zero(det_xy))
+        if (!real_nums::is_zero(det_xy))
         {
             det1 = a2 * (y2 - y1) - b2 * (x2 - x1);
             det2 = a1 * (y2 - y1) - b1 * (x2 - x1);
             det = det_xy;
         }
-        else if (!is_zero(det_xz))
+        else if (!real_nums::is_zero(det_xz))
         {
             det1 = a2 * (z2 - z1) - c2 * (x2 - x1);
             det2 = a1 * (z2 - z1) - c1 * (x2 - x1);
             det = det_xz;
         }
-        else if (!is_zero(det_yz))
+        else if (!real_nums::is_zero(det_yz))
         {
             det1 = b2 * (z2 - z1) - c2 * (y2 - y1);
             det2 = b1 * (z2 - z1) - c1 * (y2 - y1);
@@ -199,8 +165,8 @@ namespace geometry
 
         std::cout << "det: " << det << " det1: " << det1 << " det2: " << det2 << " param1: " << param1 << " param2: " << param2 << std::endl;
 
-        return (is_more_or_equal_zero(param1) && is_less_or_equal_zero(param1 - 1)) &&
-               (is_more_or_equal_zero(param2) && is_less_or_equal_zero(param2 - 1));
+        return (real_nums::is_more_or_equal_zero(param1) && real_nums::is_less_or_equal_zero(param1 - 1)) &&
+               (real_nums::is_more_or_equal_zero(param2) && real_nums::is_less_or_equal_zero(param2 - 1));
     }
 
     bool is_line_intersect_triangle_2d(const line_t &line, const triangle_t &triangle)
@@ -217,9 +183,9 @@ namespace geometry
         double tmp1 = line.a_ * plane.a_ + line.b_ * plane.b_ + line.c_ * plane.c_;
         double tmp2 = plane.a_ * line.p1_.x_ + plane.b_ * line.p1_.y_ + plane.c_ * line.p1_.z_ + plane.d_; // function
         
-        if (is_zero(tmp1))
+        if (real_nums::is_zero(tmp1))
         {
-            if (is_zero(tmp2))  // line on plane
+            if (real_nums::is_zero(tmp2))  // line on plane
                 return line;
             else            // line parallel to plane
                 return nullptr;

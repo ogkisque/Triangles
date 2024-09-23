@@ -14,7 +14,9 @@ namespace geometry
 
     bool point_t::operator==(const point_t &other) const
     {
-        return equald(this->x_, other.x_) && equald(this->y_, other.y_) && equald(this->z_, other.z_); 
+        return real_nums::equald(this->x_, other.x_) &&
+               real_nums::equald(this->y_, other.y_) &&
+               real_nums::equald(this->z_, other.z_); 
     }
 
 

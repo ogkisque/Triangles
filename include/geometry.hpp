@@ -4,6 +4,8 @@
 #include <cassert>
 #include <variant>
 
+#include "real_nums.hpp"
+
 #pragma once
 
 namespace geometry {
