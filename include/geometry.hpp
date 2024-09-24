@@ -87,7 +87,6 @@ namespace geometry {
 
     bool is_point_on_line(const point_t& p, const line_t& l, bool is_on_segment);
     bool is_point_in_triangle(const point_t& p, const triangle_t& t);
-    bool is_point_on_plane(const point_t &point, const plane_t &plane);
     
     bool is_line_intersect_line(const line_t &line1, const line_t &line2);
     bool is_line_intersect_triangle_2d(const line_t &line, const triangle_t &triangle);

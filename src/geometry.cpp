@@ -57,8 +57,7 @@ namespace geometry
         }
         bool operator()(const triangle_t &triangle2)
         {
-            return is_point_on_plane(point1, triangle2.plane_) &&
-                   is_point_in_triangle(point1, triangle2);
+            return is_point_in_triangle(point1, triangle2);
         }
 
         const point_t& point1;
@@ -180,13 +179,6 @@ namespace geometry
             return 0 <= cur_param && cur_param <= 1; 
 
         return true;
-    }
-
-    bool is_point_on_plane(const point_t &point, const plane_t &plane)
-    {
-        assert(("Data is not valid", plane.is_valid()));
-
-        return plane.a_ * point.x_ + plane.b_ * point.y_ + plane.c_ * point.z_ + plane.d_ == 0;
     }
 
     bool is_point_in_triangle(const point_t& p, const triangle_t& t)
