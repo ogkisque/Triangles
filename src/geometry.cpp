@@ -1,59 +1,166 @@
 #include "geometry.hpp"
 
-namespace
-{
-    const double EPS = std::numeric_limits<double>::epsilon();
-    const double MAX = std::numeric_limits<double>::max();
-
-    bool is_zero(const double x)
-    {
-        return std::fabs(x) < EPS;
-    }
-
-    inline bool equald(const double x, const double y)
-    {
-        return std::fabs(x - y) < EPS;
-    }
-
-    bool is_more_zero(const double x)
-    {
-        return x > EPS;
-    }
-
-    bool is_less_zero(const double x)
-    {
-        return x < -EPS;
-    }
-
-    bool is_more_or_equal_zero(const double x)
-    {
-        return is_more_zero(x) || is_zero(x);
-    }
-
-    bool is_less_or_equal_zero(const double x)
-    {
-        return is_less_zero(x) || is_zero(x);
-    }
-}
-
 namespace geometry
 {
 
-//  General functions
+    figure_t figure_ctor(const point_t &point1, const point_t &point2, const point_t &point3)
+    {
+        if (point1 == point2 && point2 == point3)
+        {
+            return point1;
+        }
+        else if (point1 == point2)
+        {
+            return line_t{point1, point3};
+        }
+        else if (point1 == point3)
+        {
+            return line_t{point1, point2};
+        }
+        else if (point2 == point3)
+        {
+            return line_t{point1, point3};
+        }
+        else
+        {
+            return triangle_t{point1, point2, point3};
+        }
+    }
+
+    struct CallIntersectFigure
+    {
+        bool operator()(const point_t &point1)
+        {
+            return intersect(point1, fig2);
+        }
+        bool operator()(const line_t &line1)
+        {
+            return intersect(line1, fig2);
+        }
+        bool operator()(const triangle_t &triangle1)
+        {
+            return intersect(triangle1, fig2);
+        }
+
+        const figure_t& fig2;
+    };
+
+    struct CallIntersectPoint
+    {
+        bool operator()(const point_t &point2)
+        {
+            return point1 == point2;
+        }
+        bool operator()(const line_t &line2)
+        {
+            return is_point_on_line(point1, line2, true);
+        }
+        bool operator()(const triangle_t &triangle2)
+        {
+            return is_point_on_plane(point1, triangle2.plane_) &&
+                   is_point_in_triangle(point1, triangle2);
+        }
+
+        const point_t& point1;
+    };
+
+    struct CallIntersectLine
+    {
+        bool operator()(const point_t &point2)
+        {
+            return is_point_on_line(point2, line1, true);
+        }
+        bool operator()(const line_t &line2)
+        {
+            return is_line_intersect_line(line1, line2);
+        }
+        bool operator()(const triangle_t &triangle2)
+        {
+            return is_line_intersect_triangle(line1, triangle2);
+        }
+
+        const line_t& line1;
+    };
+
+    struct CallIntersectTriangle
+    {
+        bool operator()(const point_t &point2)
+        {
+            return is_point_in_triangle(point2, triangle1);
+        }
+        bool operator()(const line_t &line2)
+        {
+            return is_line_intersect_triangle(line2, triangle1);
+        }
+        bool operator()(const triangle_t &triangle2)
+        {
+            return is_triangle_intersect_triangle(triangle1, triangle2);
+        }
+
+        const triangle_t& triangle1;
+    };
+
+    bool intersect(const figure_t &fig1, const figure_t &fig2)
+    {
+        return std::visit(CallIntersectFigure{fig2}, fig1);
+    }
+
+    bool intersect(const point_t &point, const figure_t &fig)
+    {
+        return std::visit(CallIntersectPoint{point}, fig);
+    }
+
+    bool intersect(const line_t &line, const figure_t &fig)
+    {
+        return std::visit(CallIntersectLine{line}, fig);
+    }
+
+    bool intersect(const triangle_t &triangle, const figure_t &fig)
+    {
+        return std::visit(CallIntersectTriangle{triangle}, fig);
+    }
+
+    std::variant<nullptr_t, point_t, line_t> get_line_plane_intersection(const line_t &line, const plane_t &plane)
+    {
+        assert(("Data is not valid", line.is_valid() && plane.is_valid()));
+
+        double tmp1 = line.a_ * plane.a_ + line.b_ * plane.b_ + line.c_ * plane.c_;
+        double tmp2 = plane.a_ * line.p1_.x_ + plane.b_ * line.p1_.y_ + plane.c_ * line.p1_.z_ + plane.d_; // function
+        
+        if (real_nums::is_zero(tmp1))
+        {
+            if (real_nums::is_zero(tmp2))  // line on plane
+                return line;
+            else            // line parallel to plane
+                return nullptr;
+        }
+        else                // line intersect plane
+        {
+            double param = tmp2 / tmp1;
+            point_t point_on_plane{line.p1_.x_ + param * line.a_,
+                                   line.p1_.y_ + param * line.b_,
+                                   line.p1_.z_ + param * line.c_};
+            
+            if (is_point_on_line(point_on_plane, line, true))
+                return point_on_plane;
+            else
+                return nullptr;
+        }
+    }
 
     bool is_point_on_line(const point_t& p, const line_t& l, bool is_on_segment)
     {
         double cur_param = 0;
         
-        if (!is_zero(l.a_))
+        if (!real_nums::is_zero(l.a_))
         {
             cur_param = (p.x_ - l.p1_.x_) / l.a_;
         }
-        else if (!is_zero(l.b_))
+        else if (!real_nums::is_zero(l.b_))
         {
             cur_param = (p.y_ - l.p1_.y_) / l.b_;
         }
-        else if (!is_zero(l.c_))
+        else if (!real_nums::is_zero(l.c_))
         {
             cur_param = (p.z_ - l.p1_.z_) / l.c_;
         }
@@ -75,11 +182,18 @@ namespace geometry
         return true;
     }
 
+    bool is_point_on_plane(const point_t &point, const plane_t &plane)
+    {
+        assert(("Data is not valid", plane.is_valid()));
+
+        return plane.a_ * point.x_ + plane.b_ * point.y_ + plane.c_ * point.z_ + plane.d_ == 0;
+    }
+
     bool is_point_in_triangle(const point_t& p, const triangle_t& t)
     {       
         double plane_equation = t.plane_.a_ * p.x_ + t.plane_.b_ * p.y_ + t.plane_.c_ * p.z_ + t.plane_.d_;
         
-        if (!is_zero(plane_equation))
+        if (!real_nums::is_zero(plane_equation))
             return false;
         
         point_t A = t.p1_, B = t.p2_, C = t.p3_, O = p;
@@ -100,10 +214,14 @@ namespace geometry
         double scalar2 = v2.scalar_multiply(v3);
         double scalar3 = v3.scalar_multiply(v1);
 
-        if (is_more_or_equal_zero(scalar1) && is_more_or_equal_zero(scalar2) && is_more_or_equal_zero(scalar3))
+        if (real_nums::is_more_or_equal_zero(scalar1) &&
+            real_nums::is_more_or_equal_zero(scalar2) && 
+            real_nums::is_more_or_equal_zero(scalar3))
             return true;
 
-        if (is_less_or_equal_zero(scalar1) && is_less_or_equal_zero(scalar2) && is_less_or_equal_zero(scalar3))
+        if (real_nums::is_less_or_equal_zero(scalar1) &&
+            real_nums::is_less_or_equal_zero(scalar2) && 
+            real_nums::is_less_or_equal_zero(scalar3))
             return true;
         
         return false;
@@ -126,7 +244,7 @@ namespace geometry
             return false;
         }
 
-        // intersect
+        // intersect or in the different planes
         
         double a1 = line1.a_;
         double b1 = line1.b_;
@@ -147,36 +265,34 @@ namespace geometry
         double det1 = 0;
         double det2 = 0;
         double det = 0;
-        if (!is_zero(det_xy))
+        if (!real_nums::is_zero(det_xy))
         {
             det1 = a2 * (y2 - y1) - b2 * (x2 - x1);
             det2 = a1 * (y2 - y1) - b1 * (x2 - x1);
             det = det_xy;
         }
-        else if (!is_zero(det_xz))
+        else if (!real_nums::is_zero(det_xz))
         {
             det1 = a2 * (z2 - z1) - c2 * (x2 - x1);
             det2 = a1 * (z2 - z1) - c1 * (x2 - x1);
             det = det_xz;
         }
-        else if (!is_zero(det_yz))
+        else if (!real_nums::is_zero(det_yz))
         {
             det1 = b2 * (z2 - z1) - c2 * (y2 - y1);
             det2 = b1 * (z2 - z1) - c1 * (y2 - y1);
             det = det_yz;
         }
-        else
+        else // lines don't lie in the same plane
         {
-            assert(("Lines parallel", 0));
+            return false;
         }
 
         double param1 = det1 / det;
         double param2 = det2 / det;
 
-        std::cout << "det: " << det << " det1: " << det1 << " det2: " << det2 << " param1: " << param1 << " param2: " << param2 << std::endl;
-
-        return (is_more_or_equal_zero(param1) && is_less_or_equal_zero(param1 - 1)) &&
-               (is_more_or_equal_zero(param2) && is_less_or_equal_zero(param2 - 1));
+        return (real_nums::is_more_or_equal_zero(param1) && real_nums::is_less_or_equal_zero(param1 - 1)) &&
+               (real_nums::is_more_or_equal_zero(param2) && real_nums::is_less_or_equal_zero(param2 - 1));
     }
 
     bool is_line_intersect_triangle_2d(const line_t &line, const triangle_t &triangle)
@@ -186,39 +302,11 @@ namespace geometry
                is_line_intersect_line(line, triangle.l3_);
     }
 
-    std::variant<nullptr_t, point_t, line_t> intersect(const line_t &line, const plane_t &plane)
-    {
-        assert(("Data is not valid", line.is_valid() && plane.is_valid()));
-
-        double tmp1 = line.a_ * plane.a_ + line.b_ * plane.b_ + line.c_ * plane.c_;
-        double tmp2 = plane.a_ * line.p1_.x_ + plane.b_ * line.p1_.y_ + plane.c_ * line.p1_.z_ + plane.d_; // function
-        
-        if (is_zero(tmp1))
-        {
-            if (is_zero(tmp2))  // line on plane
-                return line;
-            else            // line parallel to plane
-                return nullptr;
-        }
-        else                // line intersect plane
-        {
-            double param = tmp2 / tmp1;
-            point_t point_on_plane{line.p1_.x_ + param * line.a_,
-                                   line.p1_.y_ + param * line.b_,
-                                   line.p1_.z_ + param * line.c_};
-            
-            if (is_point_on_line(point_on_plane, line, true))
-                return point_on_plane;
-            else
-                return nullptr;
-        }
-    }
-
-    bool intersect(const line_t &line, const triangle_t &triangle)
+    bool is_line_intersect_triangle(const line_t &line, const triangle_t &triangle)
     {
         assert(("Data is not valid", line.is_valid() && triangle.is_valid()));
 
-        auto intersection = intersect(line, triangle.plane_);
+        auto intersection = get_line_plane_intersection(line, triangle.plane_);
         switch (intersection.index())
         {
             case 0:
@@ -234,140 +322,9 @@ namespace geometry
 
     bool is_triangle_intersect_triangle(const triangle_t &triangle1, const triangle_t &triangle2)
     {
-        return intersect(triangle1.l1_, triangle2) ||
-               intersect(triangle1.l2_, triangle2) ||
-               intersect(triangle1.l3_, triangle2);
-    }
-
-
-//  =========================== Point functions ===========================
-
-    point_t::point_t(const double x, const double y, const double z) : x_(x), y_(y), z_(z) {}
-    point_t::point_t(const point_t &point) : x_(point.x_), y_(point.y_), z_(point.z_) {}
-
-    void point_t::print() const
-    {
-        std::cout << "(" << x_ << "; " << y_ << "; " << z_ << ")" << std::endl;
-    }
-
-    bool point_t::operator==(const point_t &other) const
-    {
-        return equald(this->x_, other.x_) && equald(this->y_, other.y_) && equald(this->z_, other.z_); 
-    }
-
-
-//  =========================== Line functions ============================
-
-    line_t::line_t(const point_t &p1, const point_t &p2) :  
-        p1_(p1), p2_(p2),
-        a_(p2.x_ - p1.x_),
-        b_(p2.y_ - p1.y_),
-        c_(p2.z_ - p1.z_)
-        {}
-
-    bool line_t::is_valid() const 
-    {
-        bool is_valid = true;
-        is_valid &= (a_ != NAN && b_ != NAN && c_ != NAN);
-        is_valid &= (a_ || b_ || c_);
-        
-        return is_valid;
-    }
-
-    void line_t::print() const 
-    {
-        std::cout << "line:" << std::endl <<
-        "x = " << p1_.x_ << " + t * " << a_ << std::endl <<
-        "y = " << p1_.y_ << " + t * " << b_ << std::endl <<
-        "z = " << p1_.z_ << " + t * " << c_ << std::endl <<
-        "segment:" << std::endl;
-        p1_.print();
-        p2_.print();
-    }
-
-    double line_t::get_length() const
-    {
-        return sqrt((p1_.x_ - p2_.x_) * (p1_.x_ - p2_.x_) + 
-                    (p1_.y_ - p2_.y_) * (p1_.y_ - p2_.y_) +
-                    (p1_.z_ - p2_.z_) * (p1_.z_ - p2_.z_));
-    }
-
-
-//  =========================== Triangle functions ===========================
-
-    triangle_t::triangle_t(const point_t &p1, const point_t &p2, const point_t &p3, size_t id) :
-            p1_(p1), p2_(p2), p3_(p3),
-            l1_(p1, p2), l2_(p2, p3), l3_(p3, p1),
-            plane_(p1, p2, p3), id_(id)
-            {}
-
-    bool triangle_t::is_valid() const
-    {
-        bool is_valid = l1_.is_valid() && l2_.is_valid() && l3_.is_valid(); 
-        
-        if (!is_valid)
-            return false;
-
-        double len1 = l1_.get_length();
-        double len2 = l2_.get_length();
-        double len3 = l3_.get_length();
-
-        is_valid &= ((len1 + len2 > len3) & (len1 + len3 > len2) & (len2 + len3 > len1));
-
-        return is_valid;
-    }
-
-
-//  ============================ Plane functions ============================
-
-    plane_t::plane_t(const point_t &p1, const point_t &p2, const point_t &p3)
-    {
-        vector_t p1p2{p1, p2};
-        vector_t p1p3{p1, p3};
-
-        a_ =   p1p2.y_ * p1p3.z_ - p1p3.y_ * p1p2.z_;
-        b_ = - p1p2.x_ * p1p3.z_ + p1p3.x_ * p1p2.z_;
-        c_ =   p1p2.x_ * p1p3.y_ - p1p3.x_ * p1p2.y_;
-        
-        d_ = - p1.x_ * a_ - p1.y_ * b_ - p1.z_ * c_;
-    }
-
-    bool plane_t::is_valid() const
-    {
-        return (a_ || b_ || c_);
-    }
-
-
-//  =========================== Vector functions ============================
-
-    vector_t::vector_t(const point_t& p1, const point_t& p2) : x_(p2.x_ - p1.x_), 
-                                                               y_(p2.y_ - p1.y_), 
-                                                               z_(p2.z_ - p1.z_) 
-                                                               {}
-    vector_t::vector_t(const double x, const double y, const double z) : x_(x), y_(y), z_(z) {}
-
-    bool vector_t::is_null() const
-    {
-        return !(x_ || y_ || z_);
-    }
-
-    void vector_t::print() const 
-    {
-        std::cout << "vector: " << x_ << " " << y_ << " " << z_ << std::endl;
-    }
-
-    vector_t vector_t::vector_multiply(const vector_t& other) const
-    {
-        vector_t ret_v{ this->y_ * other.z_ - this->z_ * other.y_, 
-                      -(this->x_ * other.z_ - this->z_ * other.x_), 
-                        this->x_ * other.y_ - this->y_ * other.x_ };
-
-        return ret_v;
-    }
-
-    double vector_t::scalar_multiply(const vector_t& other) const
-    {
-        return (this->x_ * other.x_ + this->y_ * other.y_ + this->z_ * other.z_);
+        return is_line_intersect_triangle(triangle1.l1_, triangle2) ||
+               is_line_intersect_triangle(triangle1.l2_, triangle2) ||
+               is_line_intersect_triangle(triangle1.l3_, triangle2);
     }
 
 } // namespace geometry
