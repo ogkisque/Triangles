@@ -294,22 +294,30 @@ namespace geometry
                is_line_intersect_line(line, triangle.l3_);
     }
 
+    struct CallLineIntersectTriangle
+    {
+        bool operator()(nullptr_t)
+        {
+            return false;
+        }
+        bool operator()(const point_t &point)
+        {
+            return is_point_in_triangle(point, triangle);
+        }
+        bool operator()(const line_t &line)
+        {
+            return is_line_intersect_triangle_2d(line, triangle);
+        }
+
+        const triangle_t& triangle;  
+    };
+
     bool is_line_intersect_triangle(const line_t &line, const triangle_t &triangle)
     {
         assert(("Data is not valid", line.is_valid() && triangle.is_valid()));
 
         auto intersection = get_line_plane_intersection(line, triangle.plane_);
-        switch (intersection.index())
-        {
-            case 0:
-                return false;
-            case 1:
-                return is_point_in_triangle(std::get<point_t>(intersection), triangle);
-            case 2:
-                return is_line_intersect_triangle_2d(std::get<line_t>(intersection), triangle);
-            default:
-                assert(("incorect std::variant type", 0));
-        }
+        return std::visit(CallLineIntersectTriangle{triangle}, intersection);
     }
 
     bool is_triangle_intersect_triangle(const triangle_t &triangle1, const triangle_t &triangle2)
