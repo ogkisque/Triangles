@@ -17,7 +17,7 @@ namespace geometry {
         double y_ = 0;
         double z_ = 0;
 
-        void print()                            const;
+        void print()                          const;
         bool operator==(const point_t& other) const;
         bool operator!=(const point_t& other) const;
 
@@ -68,6 +68,7 @@ namespace geometry {
         double d_ = 0;
 
         bool is_valid() const;
+        void print()    const;
 
         plane_t(const point_t &point1, const point_t &point2, const point_t &point3);
     }; // class plane_t
@@ -80,6 +81,7 @@ namespace geometry {
         line_t l1_, l2_, l3_;
 
         bool is_valid() const;
+        void print()    const;
 
         triangle_t(const point_t &point1, const point_t &point2, const point_t &point3);
     }; // class triangle_t
@@ -95,8 +97,10 @@ namespace geometry {
     bool is_line_intersect_triangle(const line_t &line, const triangle_t &triangle);
 
     std::variant<nullptr_t, point_t, line_t> get_line_plane_intersection(const line_t &line, const plane_t &plane);
-
+        
     figure_t figure_ctor(const point_t &point1, const point_t &point2, const point_t &point3);
+    void figure_print(const figure_t& figure);
+    
     bool intersect(const figure_t &figure1, const figure_t &figure2);
     bool intersect(const point_t &point, const figure_t &figure);
     bool intersect(const line_t &line, const figure_t &figure);
