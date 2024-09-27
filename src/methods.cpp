@@ -19,6 +19,12 @@ namespace geometry
                real_nums::equald(this->z_, other.z_); 
     }
 
+    bool point_t::operator!=(const point_t& other) const
+    {
+        return !real_nums::equald(this->x_, other.x_) ||
+               !real_nums::equald(this->y_, other.y_) ||
+               !real_nums::equald(this->z_, other.z_);
+    }
 
 //  =========================== Line functions ============================
 
