@@ -36,7 +36,7 @@ namespace
     {
         for (size_t i = 0; i < num_figs; i++)
         {
-            for (size_t j = i; j < num_figs; j++)
+            for (size_t j = i + 1; j < num_figs; j++)
             {
                 if (geometry::intersect(figs[i], figs[j]))
                 {
