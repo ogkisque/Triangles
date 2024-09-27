@@ -17,6 +17,27 @@ namespace geometry
             return triangle_t{point1, point2, point3};
     }
 
+    struct CallPrint
+    {
+        void operator()(const point_t &point)
+        {
+            point.print();
+        }
+        void operator()(const line_t &line)
+        {
+            line.print();
+        }
+        void operator()(const triangle_t &triangle)
+        {
+            triangle.print();
+        }
+    };
+
+    void figure_print(const figure_t& figure)
+    {
+        std::visit(CallPrint{}, figure);
+    }
+
     struct CallIntersectFigure
     {
         bool operator()(const point_t &point1)
@@ -304,6 +325,9 @@ namespace geometry
 
     bool is_line_intersect_triangle_2d(const line_t &line, const triangle_t &triangle)
     {
+        if (is_point_in_triangle(line.p1_, triangle) || is_point_in_triangle(line.p2_, triangle))
+            return true;
+
         return is_line_intersect_line(line, triangle.l1_) ||
                is_line_intersect_line(line, triangle.l2_) ||
                is_line_intersect_line(line, triangle.l3_);
@@ -339,7 +363,10 @@ namespace geometry
     {
         return is_line_intersect_triangle(triangle1.l1_, triangle2) ||
                is_line_intersect_triangle(triangle1.l2_, triangle2) ||
-               is_line_intersect_triangle(triangle1.l3_, triangle2);
+               is_line_intersect_triangle(triangle1.l3_, triangle2) ||
+               is_line_intersect_triangle(triangle2.l1_, triangle1) ||
+               is_line_intersect_triangle(triangle2.l2_, triangle1) ||
+               is_line_intersect_triangle(triangle2.l3_, triangle1);
     }
 
 } // namespace geometry

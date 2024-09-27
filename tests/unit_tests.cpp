@@ -522,6 +522,54 @@ TEST(IS_TRIANGLE_INTERSECT_TRIANGLE_TEST, test_12)
     ASSERT_EQ(geometry::is_triangle_intersect_triangle(t1, t2), true);
 }
 
+TEST(IS_TRIANGLE_INTERSECT_TRIANGLE_TEST, test_13)
+{
+    geometry::point_t p1{-1.88, 1.76, 74.9994};
+    geometry::point_t p2{0.32, 0.488, 74.9994};
+    geometry::point_t p3{0, -2.144, 74.9994};
+
+    geometry::point_t p4{-0.94, 0.88, 74.9994};
+    geometry::point_t p5{0.16, 0.244, 74.9994};
+    geometry::point_t p6{0, -1.072, 74.9994};
+
+    geometry::triangle_t t1{p1, p2, p3};
+    geometry::triangle_t t2{p4, p5, p6};    
+        
+    ASSERT_EQ(geometry::is_triangle_intersect_triangle(t1, t2), true);
+}
+
+TEST(IS_TRIANGLE_INTERSECT_TRIANGLE_TEST, test_14)
+{
+    geometry::point_t p1{-2.824, 3.076, 1.4562};
+    geometry::point_t p2{0.056, 0.872, 1.4562};
+    geometry::point_t p3{0, -3.348, 1.4562};
+
+    geometry::point_t p4{-1.412, 1.538, 1.4562};
+    geometry::point_t p5{0.028, 0.436, 1.4562};
+    geometry::point_t p6{0, -1.674, 1.4562};
+
+    geometry::triangle_t t1{p1, p2, p3};
+    geometry::triangle_t t2{p4, p5, p6};    
+        
+    ASSERT_EQ(geometry::is_triangle_intersect_triangle(t1, t2), true);
+}
+
+TEST(IS_TRIANGLE_INTERSECT_TRIANGLE_TEST, test_15)
+{
+    geometry::point_t p1{-2.824, 3.076, 5.093};
+    geometry::point_t p2{0.056, 0.872, 5.093};
+    geometry::point_t p3{0, -3.348, 5.093};
+
+    geometry::point_t p4{-1.412, 1.538, 5.093};
+    geometry::point_t p5{0.028, 0.436, 5.093};
+    geometry::point_t p6{0, -1.674, 5.093};
+
+    geometry::triangle_t t1{p1, p2, p3};
+    geometry::triangle_t t2{p4, p5, p6};    
+        
+    ASSERT_EQ(geometry::is_triangle_intersect_triangle(t2, t1), true);
+}
+
 
 // LINE INTERSECT PLANE
 
