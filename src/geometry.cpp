@@ -254,64 +254,52 @@ namespace geometry
         }
 
         // intersect or in the different planes
-        
-        double a1 = line1.a_;
-        double b1 = line1.b_;
-        double c1 = line1.c_;
-        double a2 = line2.a_;
-        double b2 = line2.b_;
-        double c2 = line2.c_;
-        double x1 = line1.p1_.x_;
-        double y1 = line1.p1_.y_;
-        double z1 = line1.p1_.z_;
-        double x2 = line2.p1_.x_;
-        double y2 = line2.p1_.y_;
-        double z2 = line2.p1_.z_;
 
-        double det_xy = a2 * b1 - a1 * b2;
-        double det_xz = a2 * c1 - a1 * c2;
-        double det_yz = b2 * c1 - b1 * c2;
-        double det1 = 0;
-        double det2 = 0;
-        double det = 0;
+        point_t p1 = {line1.p1_.x_, line1.p1_.y_, line1.p1_.z_};
+        point_t p2 = {line2.p1_.x_, line2.p1_.y_, line2.p1_.z_};
 
-        double param1 = 0;
-        double param2 = 0;
+        vector_t delta   = {p1, p2};
+        vector_t tanget1 = {line1.a_, line1.b_, line1.c_};
+        vector_t tanget2 = {line2.a_, line2.b_, line2.c_};
+
+        double det_xy = tanget2.x_ * tanget1.y_ - tanget2.y_ * tanget1.x_;
+        double det_xz = tanget2.x_ * tanget1.z_ - tanget2.z_ * tanget1.x_;
+        double det_yz = tanget2.y_ * tanget1.z_ - tanget2.z_ * tanget1.y_;
         
+        double det1 = 0, det2 = 0;
+        double param1 = 0, param2 = 0;
+
         if (!real_nums::is_zero(det_xy))
         {
-            det1 = a2 * (y2 - y1) - b2 * (x2 - x1);
-            det2 = a1 * (y2 - y1) - b1 * (x2 - x1);
-            det = det_xy;
+            det1 = tanget2.x_ * delta.y_ - tanget2.y_ * delta.x_;
+            det2 = tanget1.x_ * delta.y_ - tanget1.y_ * delta.x_;
 
-            param1 = det1 / det;
-            param2 = det2 / det;
+            param1 = det1 / det_xy;
+            param2 = det2 / det_xy;
 
-            if (z1 + c1 * param1 != z2 + c2 * param2)
+            if (p1.z_ + tanget1.z_ * param1 != p2.z_ + tanget2.z_ * param2)
                 return false;
         }
         else if (!real_nums::is_zero(det_xz))
         {
-            det1 = a2 * (z2 - z1) - c2 * (x2 - x1);
-            det2 = a1 * (z2 - z1) - c1 * (x2 - x1);
-            det = det_xz;
+            det1 = tanget2.x_ * delta.z_ - tanget2.z_ * delta.x_;
+            det2 = tanget1.x_ * delta.z_ - tanget1.z_ * delta.x_;
 
-            param1 = det1 / det;
-            param2 = det2 / det;
+            param1 = det1 / det_xz;
+            param2 = det2 / det_xz;
 
-            if (y1 + b1 * param1 != y2 + b2 * param2)
+            if (p1.y_ + tanget1.y_ * param1 != p2.y_ + tanget2.y_ * param2)
                 return false;
         }
         else if (!real_nums::is_zero(det_yz))
         {
-            det1 = b2 * (z2 - z1) - c2 * (y2 - y1);
-            det2 = b1 * (z2 - z1) - c1 * (y2 - y1);
-            det = det_yz;
+            det1 = tanget2.y_ * delta.z_ - tanget2.z_ * delta.y_;
+            det2 = tanget1.y_ * delta.z_ - tanget1.z_ * delta.y_;
 
-            param1 = det1 / det;
-            param2 = det2 / det;
+            param1 = det1 / det_yz;
+            param2 = det2 / det_yz;
 
-            if (x1 + a1 * param1 != x2 + a2 * param2)
+            if (p1.x_ + tanget1.x_ * param1 != p2.x_ + tanget2.x_ * param2)
                 return false;
         }
         else // lines don't lie in the same plane
