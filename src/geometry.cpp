@@ -327,4 +327,39 @@ namespace geometry
                is_line_intersect_triangle(triangle1.l3_, triangle2);
     }
 
+    bool is_point_in_cube(const point_t &point, const cube_t &cube)
+    {
+        return (real_nums::is_more_or_equal_zero(point.x_ - cube.start_point_.x_) &&
+                real_nums::is_less_or_equal_zero(point.x_ - cube.start_point_.x_ + cube.x_size_) &&
+                real_nums::is_more_or_equal_zero(point.y_ - cube.start_point_.y_) &&
+                real_nums::is_less_or_equal_zero(point.y_ - cube.start_point_.y_ + cube.y_size_) &&
+                real_nums::is_more_or_equal_zero(point.z_ - cube.start_point_.z_) &&
+                real_nums::is_less_or_equal_zero(point.z_ - cube.start_point_.z_ + cube.z_size_));
+    }
+
+    struct CallFigureIntersectCube
+    {
+        bool operator()(const point_t &point)
+        {
+            return is_point_in_cube(point, cube);
+        }
+
+        bool operator()(const line_t &line)
+        {
+            return false;
+        }
+
+        bool operator()(const triangle_t &triangle)
+        {
+            return false;
+        }
+
+        const cube_t &cube;
+    };
+
+    bool intersect(const figure_t &fig, const cube_t &cube)
+    {
+        return std::visit(CallFigureIntersectCube{cube}, fig);
+    }
+
 } // namespace geometry

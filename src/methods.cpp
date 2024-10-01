@@ -102,6 +102,26 @@ namespace geometry
     }
 
 
+//  =========================== Square functions ============================
+
+    square_t::square_t(const point_t& p1, const point_t& p2, const point_t& p3) :
+        p1_(p1), p2_(p2), p3_(p3),
+        size_(sqrt((p1.x_ - p2.x_) * (p1.x_ - p2.x_) + 
+                   (p1.y_ - p2.y_) * (p1.y_ - p2.y_) +
+                   (p1.z_ - p2.z_) * (p1.z_ - p2.z_))),
+        plane_(p1, p2, p3)
+    {}
+
+//  ============================ Cube functions =============================
+
+    cube_t::cube_t(const point_t& start, double x_size, double y_size, double z_size) : start_point_(start),
+                                                                                        x_size_(x_size),
+                                                                                        y_size_(y_size),
+                                                                                        z_size_(z_size)
+    {
+        *planes[0] = {start_point_, {start_point_.x_ + , start_point_};
+    }
+
 //  =========================== Vector functions ============================
 
     vector_t::vector_t(const point_t& p1, const point_t& p2) : x_(p2.x_ - p1.x_), 
