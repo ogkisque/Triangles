@@ -4,7 +4,8 @@ namespace geometry
 {
     //  =========================== Point functions ===========================
 
-    point_t::point_t(const double x, const double y, const double z) : x_(x), y_(y), z_(z) {}
+    point_t::point_t(const double x, const double y, const double z) :
+        x_(x), y_(y), z_(z) {}
     point_t::point_t(const point_t &point) : x_(point.x_), y_(point.y_), z_(point.z_) {}
 
     void point_t::print() const
@@ -102,25 +103,11 @@ namespace geometry
     }
 
 
-//  =========================== Square functions ============================
-
-    square_t::square_t(const point_t& p1, const point_t& p2, const point_t& p3) :
-        p1_(p1), p2_(p2), p3_(p3),
-        size_(sqrt((p1.x_ - p2.x_) * (p1.x_ - p2.x_) + 
-                   (p1.y_ - p2.y_) * (p1.y_ - p2.y_) +
-                   (p1.z_ - p2.z_) * (p1.z_ - p2.z_))),
-        plane_(p1, p2, p3)
-    {}
-
 //  ============================ Cube functions =============================
 
-    cube_t::cube_t(const point_t& start, double x_size, double y_size, double z_size) : start_point_(start),
-                                                                                        x_size_(x_size),
-                                                                                        y_size_(y_size),
-                                                                                        z_size_(z_size)
-    {
-        *planes[0] = {start_point_, {start_point_.x_ + , start_point_};
-    }
+    cube_t::cube_t(double x1, double x2, double y1, double y2, double z1, double z2) : 
+        x1_(x1), x2_(x2), y1_(y1), y2_(y2), z1_(z1), z2_(z2) {}
+
 
 //  =========================== Vector functions ============================
 

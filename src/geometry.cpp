@@ -329,15 +329,15 @@ namespace geometry
 
     bool is_point_in_cube(const point_t &point, const cube_t &cube)
     {
-        return (real_nums::is_more_or_equal_zero(point.x_ - cube.start_point_.x_) &&
-                real_nums::is_less_or_equal_zero(point.x_ - cube.start_point_.x_ + cube.x_size_) &&
-                real_nums::is_more_or_equal_zero(point.y_ - cube.start_point_.y_) &&
-                real_nums::is_less_or_equal_zero(point.y_ - cube.start_point_.y_ + cube.y_size_) &&
-                real_nums::is_more_or_equal_zero(point.z_ - cube.start_point_.z_) &&
-                real_nums::is_less_or_equal_zero(point.z_ - cube.start_point_.z_ + cube.z_size_));
+        return (real_nums::is_more_or_equal_zero(point.x_ - cube.x1_) &&
+                real_nums::is_less_or_equal_zero(point.x_ - cube.x2_) &&
+                real_nums::is_more_or_equal_zero(point.y_ - cube.y1_) &&
+                real_nums::is_less_or_equal_zero(point.y_ - cube.y2_) &&
+                real_nums::is_more_or_equal_zero(point.z_ - cube.z1_) &&
+                real_nums::is_less_or_equal_zero(point.z_ - cube.z2_));
     }
 
-    struct CallFigureIntersectCube
+    struct CallFigureInCube
     {
         bool operator()(const point_t &point)
         {
@@ -346,12 +346,15 @@ namespace geometry
 
         bool operator()(const line_t &line)
         {
-            return false;
+            return is_point_in_cube(line.p1_, cube) &&
+                   is_point_in_cube(line.p2_, cube);
         }
 
         bool operator()(const triangle_t &triangle)
         {
-            return false;
+            return is_point_in_cube(triangle.p1_, cube) &&
+                   is_point_in_cube(triangle.p2_, cube) &&
+                   is_point_in_cube(triangle.p1_, cube);
         }
 
         const cube_t &cube;
@@ -359,7 +362,45 @@ namespace geometry
 
     bool intersect(const figure_t &fig, const cube_t &cube)
     {
-        return std::visit(CallFigureIntersectCube{cube}, fig);
+        return std::visit(CallFigureInCube{cube}, fig);
     }
+/*
+    struct CallGetLimitCube
+    {
+        cube_t operator()(const point_t &point)
+        {
+            cube_t cube{point.x_, point.x_, point.y_, point.y_, point.z_, point.z_};
+            return cube;
+        }
+
+        cube_t operator()(const line_t &line)
+        {
+            cube_t cube{std::min(line.p1_.x_, line.p2_.x_), std::max(line.p1_.x_, line.p2_.x_),
+                        std::min(line.p1_.y_, line.p2_.y_), std::max(line.p1_.y_, line.p2_.y_),
+                        std::min(line.p1_.z_, line.p2_.z_), std::max(line.p1_.z_, line.p2_.z_)};
+            return cube;
+        }
+
+        cube_t operator()(const triangle_t &triangle)
+        {
+            cube_t cube{std::min(triangle.p1_.x_, triangle.p2_.x_, triangle.p3_.x_),
+                        std::max(triangle.p1_.x_, triangle.p2_.x_, triangle.p3_.x_),
+                        std::min(triangle.p1_.y_, triangle.p2_.y_, triangle.p3_.y_),
+                        std::max(triangle.p1_.y_, triangle.p2_.y_, triangle.p3_.y_),
+                        std::min(triangle.p1_.z_, triangle.p2_.z_, triangle.p3_.z_),
+                        std::max(triangle.p1_.z_, triangle.p2_.z_, triangle.p3_.z_)};
+            return cube;
+        }
+    };
+
+*/
+    cube_t get_limit_cube(const figure_t &fig)
+    {
+        //return std::visit(CallGetLimitCube{}, fig);
+        double x = 123.452;
+        double y = 456.789;
+        double z = std::max(x, y);
+    }
+
 
 } // namespace geometry

@@ -4,6 +4,8 @@
 #include <cassert>
 #include <variant>
 #include <array>
+#include <utility>
+#include <algorithm>
 
 #include "real_nums.hpp"
 
@@ -84,27 +86,13 @@ namespace geometry {
         triangle_t(const point_t &p1, const point_t &p2, const point_t &p3);
     }; // class triangle_t
 
-    class square_t
-    {
-    public:
-        point_t p1_, p2_, p3_;
-        double size_;
-
-        plane_t plane_;
-
-        square_t(const point_t& p1, const point_t& p2, const point_t& p3);
-    };
-
     class cube_t
     {
     public:
-        std::array<point_t*, 4> points_;
-        double size_;
-        std::array<square_t*, 6> squares_;
+        double x1_, x2_, y1_, y2_, z1_, z2_;
 
-        cube_t(const point_t& point1, const point_t& point2, const point_t& point3, const point_t& point4);
-
-    };
+        cube_t(double x1, double x2, double y1, double y2, double z1, double z2);
+    }; // class cube_t
 
     using figure_t = std::variant<point_t, line_t, triangle_t>;
 
@@ -124,5 +112,7 @@ namespace geometry {
     bool intersect(const point_t &point, const figure_t &fig);
     bool intersect(const line_t &line, const figure_t &fig);
     bool intersect(const triangle_t &triangle, const figure_t &fig);
-    bool intersect(const figure_t &fig, const cube_t &cube);
+
+    bool is_fig_in_cube(const figure_t &fig, const cube_t &cube);
+    cube_t get_limit_cube(const figure_t &fig);
 } // namespace geometry
