@@ -364,7 +364,7 @@ namespace geometry
     {
         return std::visit(CallFigureInCube{cube}, fig);
     }
-/*
+
     struct CallGetLimitCube
     {
         cube_t operator()(const point_t &point)
@@ -375,31 +375,28 @@ namespace geometry
 
         cube_t operator()(const line_t &line)
         {
-            cube_t cube{std::min(line.p1_.x_, line.p2_.x_), std::max(line.p1_.x_, line.p2_.x_),
-                        std::min(line.p1_.y_, line.p2_.y_), std::max(line.p1_.y_, line.p2_.y_),
-                        std::min(line.p1_.z_, line.p2_.z_), std::max(line.p1_.z_, line.p2_.z_)};
+            cube_t cube{real_nums::min2(line.p1_.x_, line.p2_.x_), real_nums::max2(line.p1_.x_, line.p2_.x_),
+                        real_nums::min2(line.p1_.y_, line.p2_.y_), real_nums::max2(line.p1_.y_, line.p2_.y_),
+                        real_nums::min2(line.p1_.z_, line.p2_.z_), real_nums::max2(line.p1_.z_, line.p2_.z_)};
             return cube;
         }
 
         cube_t operator()(const triangle_t &triangle)
         {
-            cube_t cube{std::min(triangle.p1_.x_, triangle.p2_.x_, triangle.p3_.x_),
-                        std::max(triangle.p1_.x_, triangle.p2_.x_, triangle.p3_.x_),
-                        std::min(triangle.p1_.y_, triangle.p2_.y_, triangle.p3_.y_),
-                        std::max(triangle.p1_.y_, triangle.p2_.y_, triangle.p3_.y_),
-                        std::min(triangle.p1_.z_, triangle.p2_.z_, triangle.p3_.z_),
-                        std::max(triangle.p1_.z_, triangle.p2_.z_, triangle.p3_.z_)};
+            cube_t cube{real_nums::min3(triangle.p1_.x_, triangle.p2_.x_, triangle.p3_.x_),
+                        real_nums::max3(triangle.p1_.x_, triangle.p2_.x_, triangle.p3_.x_),
+                        real_nums::min3(triangle.p1_.y_, triangle.p2_.y_, triangle.p3_.y_),
+                        real_nums::max3(triangle.p1_.y_, triangle.p2_.y_, triangle.p3_.y_),
+                        real_nums::min3(triangle.p1_.z_, triangle.p2_.z_, triangle.p3_.z_),
+                        real_nums::max3(triangle.p1_.z_, triangle.p2_.z_, triangle.p3_.z_)};
             return cube;
         }
     };
 
-*/
+
     cube_t get_limit_cube(const figure_t &fig)
     {
-        //return std::visit(CallGetLimitCube{}, fig);
-        double x = 123.452;
-        double y = 456.789;
-        double z = std::max(x, y);
+        return std::visit(CallGetLimitCube{}, fig);
     }
 
 

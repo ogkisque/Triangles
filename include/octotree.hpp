@@ -1,4 +1,5 @@
 #include "geometry.hpp"
+#include "real_nums.hpp"
 #include <vector>
 #include <list>
 #include <map>
@@ -7,27 +8,33 @@
 
 namespace octotree {
 
+    using ListT = typename std::list<std::pair<unsigned, geometry::figure_t>>;
+    using ListIterT = typename std::list<std::pair<unsigned, geometry::figure_t>>::iterator;
+
+    const int NUM_CHILDS = 8;
+
     class OctoNode
     {
-        std::map<unsigned, geometry::figure_t> figs_;
+    public:
+        ListT* figs_;
+        ListT* parent_figs_;
         geometry::cube_t cube_;
+        double min_cube_size_;
 
-        std::array<OctoNode*, 8> childs_;
-        OctoNode* parent_;
+        std::array<OctoNode*, NUM_CHILDS> childs_;
 
-        OctoNode(std::map<unsigned, geometry::figure_t> &figs,
-                 double x1, double x2, double y1, double y2, double z1, double z2);
+        OctoNode(geometry::cube_t cube, ListT* parent_figs, double min_cube_size);
     };
 
     class OctoTree
     {
+    public:
         OctoNode* root_;
-
+        
         OctoTree(const std::vector<geometry::figure_t> &figs, unsigned num_figs);
     };
 
-
-
+    void distribute_figures(OctoNode &node);
 
 
 } // namespace octotree

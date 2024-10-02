@@ -1,5 +1,6 @@
 #include <limits>
 #include <cmath>
+#include <algorithm>
 
 #pragma once
 
@@ -37,6 +38,26 @@ namespace real_nums
     inline bool is_less_or_equal_zero(const double x)
     {
         return is_less_zero(x) || is_zero(x);
+    }
+
+    inline double max3(double x, double y, double z)
+    {
+        return std::fmax(std::fmax(x, y), z);
+    }
+
+    inline double min3(double x, double y, double z)
+    {
+        return std::fmin(std::fmin(x, y), z);
+    }
+
+    inline double max2(double x, double y)
+    {
+        return std::fmax(x, y);
+    }
+
+    inline double min2(double x, double y)
+    {
+        return std::fmin(x, y);
     }
 
 } // namespace real_nums
