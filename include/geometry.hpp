@@ -20,8 +20,9 @@ namespace geometry {
         double y_ = 0;
         double z_ = 0;
 
-        void print()                            const;
-        bool operator==(const point_t& other_p) const;
+        void print()                          const;
+        bool operator==(const point_t& other) const;
+        bool operator!=(const point_t& other) const;
 
         point_t(const double x, const double y, const double z);
         point_t(const point_t& other);
@@ -36,7 +37,7 @@ namespace geometry {
         double z_ = 0;
 
         vector_t() = default;
-        vector_t(const point_t& p1, const point_t& p2);
+        vector_t(const point_t& point1, const point_t& point2);
         vector_t(const double x, const double y, const double z);
         
         bool     is_null() const;
@@ -58,7 +59,7 @@ namespace geometry {
         void    print()         const;
         double  get_length()    const;
 
-        line_t(const point_t &p1, const point_t &p2);
+        line_t(const point_t &point1, const point_t &point2);
     }; // class line_t
 
     class plane_t
@@ -70,8 +71,9 @@ namespace geometry {
         double d_ = 0;
 
         bool is_valid() const;
+        void print()    const;
 
-        plane_t(const point_t &p1, const point_t &p2, const point_t &p3);
+        plane_t(const point_t &point1, const point_t &point2, const point_t &point3);
     }; // class plane_t
 
     class triangle_t 
@@ -82,8 +84,9 @@ namespace geometry {
         line_t l1_, l2_, l3_;
 
         bool is_valid() const;
+        void print()    const;
 
-        triangle_t(const point_t &p1, const point_t &p2, const point_t &p3);
+        triangle_t(const point_t &point1, const point_t &point2, const point_t &point3);
     }; // class triangle_t
 
     class cube_t
@@ -96,22 +99,24 @@ namespace geometry {
 
     using figure_t = std::variant<point_t, line_t, triangle_t>;
 
-    bool is_point_on_line(const point_t& p, const line_t& l, bool is_on_segment);
-    bool is_point_in_triangle(const point_t& p, const triangle_t& t);
+    bool is_point_on_line(const point_t& point, const line_t& line, bool is_on_segment);
+    bool is_point_in_triangle(const point_t& point, const triangle_t& triangle);
     
     bool is_line_intersect_line(const line_t &line1, const line_t &line2);
     bool is_line_intersect_triangle_2d(const line_t &line, const triangle_t &triangle);
-    bool is_triangle_intersect_triangle(const triangle_t &triangle1, const triangle_t &triangle2);    std::variant<nullptr_t, point_t, line_t> intersect(const line_t &line, const plane_t &plane);
+    bool is_triangle_intersect_triangle(const triangle_t &triangle1, const triangle_t &triangle2);
     bool is_line_intersect_triangle(const line_t &line, const triangle_t &triangle);
     bool is_point_in_cube(const point_t &point, const cube_t &cube);
 
     std::variant<nullptr_t, point_t, line_t> get_line_plane_intersection(const line_t &line, const plane_t &plane);
-
+        
     figure_t figure_ctor(const point_t &point1, const point_t &point2, const point_t &point3);
-    bool intersect(const figure_t &fig1, const figure_t &fig2);
-    bool intersect(const point_t &point, const figure_t &fig);
-    bool intersect(const line_t &line, const figure_t &fig);
-    bool intersect(const triangle_t &triangle, const figure_t &fig);
+    void figure_print(const figure_t& figure);
+    
+    bool intersect(const figure_t &figure1, const figure_t &figure2);
+    bool intersect(const point_t &point, const figure_t &figure);
+    bool intersect(const line_t &line, const figure_t &figure);
+    bool intersect(const triangle_t &triangle, const figure_t &figure);
 
     bool is_fig_in_cube(const figure_t &fig, const cube_t &cube);
     cube_t get_limit_cube(const figure_t &fig);

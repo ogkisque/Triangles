@@ -7,7 +7,7 @@
 namespace real_nums
 {
 
-    const double EPS = std::numeric_limits<double>::epsilon();
+    const double EPS = 1e-13; //std::numeric_limits<double>::epsilon();
     const double MAX = std::numeric_limits<double>::max();
 
     inline bool is_zero(const double x)

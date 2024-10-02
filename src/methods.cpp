@@ -10,7 +10,7 @@ namespace geometry
 
     void point_t::print() const
     {
-        std::cout << "(" << x_ << "; " << y_ << "; " << z_ << ")" << std::endl;
+        std::cout << "(" << x_ << ", " << y_ << ", " << z_ << ")" << std::endl;
     }
 
     bool point_t::operator==(const point_t &other) const
@@ -20,6 +20,12 @@ namespace geometry
                real_nums::equald(this->z_, other.z_); 
     }
 
+    bool point_t::operator!=(const point_t& other) const
+    {
+        return !real_nums::equald(this->x_, other.x_) ||
+               !real_nums::equald(this->y_, other.y_) ||
+               !real_nums::equald(this->z_, other.z_);
+    }
 
 //  =========================== Line functions ============================
 
@@ -82,6 +88,13 @@ namespace geometry
         return is_valid;
     }
 
+    void triangle_t::print() const
+    {
+        this->plane_.print();
+        this->p1_.print();
+        this->p2_.print();
+        this->p3_.print();
+    }
 
 //  ============================ Plane functions ============================
 
@@ -102,6 +115,10 @@ namespace geometry
         return (a_ || b_ || c_);
     }
 
+    void plane_t::print() const
+    {
+        std::cout << a_ << " * x + " << b_ << " * y + " << c_ << " * z + " << d_ << std::endl;
+    }
 
 //  ============================ Cube functions =============================
 
