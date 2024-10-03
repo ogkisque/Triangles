@@ -4,6 +4,7 @@
 #include <set>
 
 #include "geometry.hpp"
+#include "octotree.hpp"
 
 namespace
 {
@@ -54,7 +55,7 @@ int main()
     size_t num_figs = input_figs(figs);
 
     std::set<size_t> intersect_figs_id;
-    intersect_figs(figs, num_figs, intersect_figs_id);
+    octotree::intersect_figs(figs, intersect_figs_id);
 
     for (size_t id : intersect_figs_id)
         std::cout << id << std::endl;
