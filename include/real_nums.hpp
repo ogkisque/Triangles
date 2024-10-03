@@ -40,16 +40,6 @@ namespace real_nums
         return is_less_zero(x) || is_zero(x);
     }
 
-    inline double max3(double x, double y, double z)
-    {
-        return std::fmax(std::fmax(x, y), z);
-    }
-
-    inline double min3(double x, double y, double z)
-    {
-        return std::fmin(std::fmin(x, y), z);
-    }
-
     inline double max2(double x, double y)
     {
         return std::fmax(x, y);
@@ -58,6 +48,16 @@ namespace real_nums
     inline double min2(double x, double y)
     {
         return std::fmin(x, y);
+    }
+    
+    inline double max3(double x, double y, double z)
+    {
+        return std::fmax(std::fmax(x, y), z);
+    }
+
+    inline double min3(double x, double y, double z)
+    {
+        return std::fmin(std::fmin(x, y), z);
     }
 
     inline double max6(double x1, double y1, double z1, double x2, double y2, double z2)
