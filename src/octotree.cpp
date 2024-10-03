@@ -3,101 +3,142 @@
 namespace octotree
 {
 
-    OctoTree::OctoTree(const std::vector<geometry::figure_t> &figs, unsigned num_figs)
+    octotree_t::octotree_t(const std::vector<geometry::figure_t> &figs)
     {
-        geometry::cube_t limit_cube = geometry::get_limit_cube(figs[0]);
-        double x_min = limit_cube.x1_;
-        double x_max = limit_cube.x2_;
-        double y_min = limit_cube.y1_;
-        double y_max = limit_cube.y2_;
-        double z_min = limit_cube.z1_;
-        double z_max = limit_cube.z2_;
+        double max_coord = geometry::get_max_coord(figs);
 
-        for (geometry::figure_t fig : figs)
-        {
-            geometry::cube_t limit_cube = geometry::get_limit_cube(fig);
-            x_min = real_nums::min2(x_min, limit_cube.x1_);
-            x_max = real_nums::max2(x_min, limit_cube.x2_);
-            y_min = real_nums::min2(x_min, limit_cube.y1_);
-            y_max = real_nums::max2(x_min, limit_cube.y2_);
-            z_min = real_nums::min2(x_min, limit_cube.z1_);
-            z_max = real_nums::max2(x_min, limit_cube.z2_);
-        }
+        geometry::cube_t limit_cube = {-max_coord, max_coord, -max_coord, max_coord, -max_coord, max_coord};
 
-        double max_size = real_nums::max3(x_max - x_min, y_max - y_min, z_max - z_min);
-        double max_size_half = max_size / 2;
-        if (max_size != x_max - x_min)
-        {
-            x_min -= max_size_half;
-            x_max += max_size_half;
-        }
-        if (max_size != y_max - y_min)
-        {
-            y_min -= max_size_half;
-            y_max += max_size_half;
-        }
-        if (max_size != z_max - z_min)
-        {
-            z_min -= max_size_half;
-            z_max += max_size_half;
-        }
-
-        limit_cube = {x_min, x_max, y_min, y_max, z_min, z_max};
+        num_fig_ = figs.size();
+        cube_max_size_ = 2 * max_coord;
+        cube_min_size_ = cube_max_size_ / num_fig_;
 
         ListT* figs_list = new ListT;
         unsigned id = 0;
+        
         for (geometry::figure_t fig : figs)
-        {
-            (*figs_list).push_back(std::make_pair(id, fig));
-            id++;
-        }
+            (*figs_list).push_back(std::make_pair(id++, fig));
 
-        root_ = new OctoNode{limit_cube, figs_list, max_size / num_figs};
+        root_ = new octonode_t{limit_cube, figs_list, *this};
     }
 
-    OctoNode::OctoNode(geometry::cube_t cube, ListT* parent_figs, double min_cube_size) : 
-                       cube_(cube), parent_figs_(parent_figs), min_cube_size_(min_cube_size)
+    octotree_t::~octotree_t()
+    {
+        octonode_t* current = root_;
+        ///TODO: we need do delete tree with loop
+        
+        // std::array<octonode_t*> all_nodes;
+
+        // while (current)
+        // {
+        //     for (size_t i = 0; i < 8; i++)
+        //         all_nodes.push_back(node.childs_[i])
+
+        //     current......
+        // }
+
+    }
+
+    octonode_t::octonode_t(geometry::cube_t cube, ListT* parent_figs, const octotree_t& tree) : 
+                       cube_(cube), parent_figs_(parent_figs), tree_(tree)
     {
         figs_ = new ListT;
     }
 
-    void distribute_figures(OctoNode &node)
+    octonode_t::~octonode_t()
     {
-        for (ListIterT fig = node.parent_figs_->begin(); fig != node.parent_figs_->end(); fig++)
-        {
-            if (geometry::is_fig_in_cube(fig->second, node.cube_))
-            {
-                node.figs_->push_back(*fig);
-                node.parent_figs_->erase(fig);
-            }
-        }
+        delete figs_;
+    }
 
-        if (real_nums::is_less_or_equal_zero(node.cube_.x2_ - node.cube_.x1_ - node.min_cube_size_) ||
+    void fill_octonode(octonode_t &node)
+    {
+        fill_figures_in_node(node);
+
+        if (real_nums::is_less_or_equal_zero(node.cube_.x2_ - node.cube_.x1_ - node.tree_.cube_min_size_) ||
             node.figs_->size() < 3)
             return;
+            
+        share_cube(node);
+    }
 
-        double cube_size_half = (node.cube_.x2_ - node.cube_.x1_) / 2;
-
-        for (int i = 0; i < NUM_CHILDS; i++)
+    void fill_figures_in_node(octonode_t &node)
+    {
+        for (ListIterT list_it = node.parent_figs_->begin(); list_it != node.parent_figs_->end(); list_it++)
         {
-            int mod1 = i % 2;
-            int mod2 = (i + 1) % 2;
-            int mod3 = i / 2 % 2;
-            int mod4 = (i + 1) / 2 % 2;
-            int mod5 = i / 4 % 2;
-            int mod6 = (i + 1) / 4 % 2;
-
-            geometry::cube_t cube{node.cube_.x1_ + mod1 * cube_size_half,
-                                  node.cube_.x2_ - mod2 * cube_size_half,
-                                  node.cube_.y1_ + mod3 * cube_size_half,
-                                  node.cube_.y2_ - mod4 * cube_size_half,
-                                  node.cube_.z1_ + mod5 * cube_size_half,
-                                  node.cube_.z2_ - mod6 * cube_size_half};
-            node.childs_[i] = new OctoNode{cube, node.figs_, node.min_cube_size_};
-
-            distribute_figures(*node.childs_[i]);
+            if (geometry::is_fig_in_cube(list_it->second, node.cube_))
+            {
+                node.figs_->push_back(*list_it);
+                node.parent_figs_->erase(list_it);
+            }
         }
     }
 
+    void share_cube(octonode_t &node)
+    {
+        double new_cube_size = (node.cube_.x2_ - node.cube_.x1_) / 2;
+
+        for (int i = 0; i < NUM_CHILDS; i++)
+        {
+            int mod1 = (i % 2);
+            int mod2 = (i + 1) % 2;
+            int mod3 = (i / 2) % 2;
+            int mod4 = (i / 2 + 1) % 2;
+            int mod5 = (i / 4) % 2;
+            int mod6 = (i / 4 + 1) % 2;
+
+            geometry::cube_t cube{node.cube_.x1_ + mod1 * new_cube_size,
+                                  node.cube_.x2_ - mod2 * new_cube_size,
+                                  node.cube_.y1_ + mod3 * new_cube_size,
+                                  node.cube_.y2_ - mod4 * new_cube_size,
+                                  node.cube_.z1_ + mod5 * new_cube_size,
+                                  node.cube_.z2_ - mod6 * new_cube_size};
+
+            node.childs_[i] = new octonode_t{cube, node.figs_, node.tree_};
+
+            fill_octonode(*node.childs_[i]);
+        }
+    }
 } // namespace octotree
 
+
+// // fill octonodes
+// void distribute_figures(octonode_t &node)
+// {
+//     // fill figure in node
+//     for (auto list_pair : node.parent_figs_)
+//     {
+//         if (geometry::is_fig_in_cube(list_pair->second, node.cube_))
+//         {
+//             node.figs_->push_back(*list_pair);
+//             node.parent_figs_->erase(list_pair);
+//         }
+//     }
+
+//     if (real_nums::is_less_or_equal_zero(node.cube_.x2_ - node.cube_.x1_ - node.min_cube_size_) ||
+//         node.figs_->size() < 3)
+//         return;
+
+//     // distribute figures
+//     double new_cube_size = (node.cube_.x2_ - node.cube_.x1_) / 2;
+
+//     for (int i = 0; i < NUM_CHILDS; i++)
+//     {
+//         int mod1 = (i % 2);
+//         int mod2 = (i + 1) % 2;
+//         int mod3 = (i / 2) % 2;
+//         int mod4 = (i / 2 + 1) % 2;
+//         int mod5 = (i / 4) % 2;
+//         int mod6 = (i / 4 + 1) % 2;
+
+//         geometry::cube_t cube{node.cube_.x1_ + mod1 * new_cube_size,
+//                               node.cube_.x2_ - mod2 * new_cube_size,
+//                               node.cube_.y1_ + mod3 * new_cube_size,
+//                               node.cube_.y2_ - mod4 * new_cube_size,
+//                               node.cube_.z1_ + mod5 * new_cube_size,
+//                               node.cube_.z2_ - mod6 * new_cube_size};
+
+//         node.childs_[i] = new octonode_t{cube, node.figs_, node.min_cube_size_};
+
+//         distribute_figures(*node.childs_[i]);
+//     }
+// }

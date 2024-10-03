@@ -6,35 +6,50 @@
 
 #pragma once
 
+
+
+
 namespace octotree {
 
-    using ListT = typename std::list<std::pair<unsigned, geometry::figure_t>>;
+    class octonode_t;
+    class octotree_t;
+
+    using ListT     = typename std::list<std::pair<unsigned, geometry::figure_t>>;
     using ListIterT = typename std::list<std::pair<unsigned, geometry::figure_t>>::iterator;
 
     const int NUM_CHILDS = 8;
 
-    class OctoNode
+    class octonode_t
     {
     public:
         ListT* figs_;
         ListT* parent_figs_;
         geometry::cube_t cube_;
-        double min_cube_size_;
+        const octotree_t& tree_;
 
-        std::array<OctoNode*, NUM_CHILDS> childs_;
+        std::array<octonode_t*, NUM_CHILDS> childs_;
 
-        OctoNode(geometry::cube_t cube, ListT* parent_figs, double min_cube_size);
+        octonode_t(geometry::cube_t cube, ListT* parent_figs, const octotree_t& tree);
+        ~octonode_t();
     };
 
-    class OctoTree
+    class octotree_t
     {
     public:
-        OctoNode* root_;
+        octonode_t* root_;
+
+        double cube_max_size_;
+        double cube_min_size_;
+        size_t num_fig_;
         
-        OctoTree(const std::vector<geometry::figure_t> &figs, unsigned num_figs);
+        // const std::vector<geometry::figure_t> &figs;
+        // min_cube
+        octotree_t(const std::vector<geometry::figure_t> &figs);
+        ~octotree_t();
     };
 
-    void distribute_figures(OctoNode &node);
-
+    void fill_octonode(octonode_t &node);
+    void fill_figures_in_node(octonode_t &node);
+    void share_cube(octonode_t &node);
 
 } // namespace octotree

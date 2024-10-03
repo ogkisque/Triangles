@@ -60,4 +60,14 @@ namespace real_nums
         return std::fmin(x, y);
     }
 
+    inline double max6(double x1, double y1, double z1, double x2, double y2, double z2)
+    {
+        return max2(max3(x1, y1, z1), max3(x2, y2, z2));
+    }
+
+    inline double max9(double x1, double y1, double z1, double x2, double y2, double z2, double x3, double y3, double z3)
+    {
+        return max3(max3(x1, y1, z1), max3(x2, y2, z2), max3(x3, y3, z3));
+    }
+
 } // namespace real_nums

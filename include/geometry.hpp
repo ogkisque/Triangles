@@ -6,6 +6,7 @@
 #include <array>
 #include <utility>
 #include <algorithm>
+#include <vector>
 
 #include "real_nums.hpp"
 
@@ -119,5 +120,6 @@ namespace geometry {
     bool intersect(const triangle_t &triangle, const figure_t &figure);
 
     bool is_fig_in_cube(const figure_t &fig, const cube_t &cube);
-    cube_t get_limit_cube(const figure_t &fig);
+
+    double get_max_coord(const std::vector<figure_t> &figs);
 } // namespace geometry
