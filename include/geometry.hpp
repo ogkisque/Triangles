@@ -3,6 +3,10 @@
 #include <limits>
 #include <cassert>
 #include <variant>
+#include <array>
+#include <utility>
+#include <algorithm>
+#include <vector>
 
 #include "real_nums.hpp"
 
@@ -86,6 +90,14 @@ namespace geometry {
         triangle_t(const point_t &point1, const point_t &point2, const point_t &point3);
     }; // class triangle_t
 
+    class cube_t
+    {
+    public:
+        double x1_, x2_, y1_, y2_, z1_, z2_;
+
+        cube_t(double x1, double x2, double y1, double y2, double z1, double z2);
+    }; // class cube_t
+
     using figure_t = std::variant<point_t, line_t, triangle_t>;
 
     bool is_point_on_line(const point_t& point, const line_t& line, bool is_on_segment);
@@ -95,6 +107,7 @@ namespace geometry {
     bool is_line_intersect_triangle_2d(const line_t &line, const triangle_t &triangle);
     bool is_triangle_intersect_triangle(const triangle_t &triangle1, const triangle_t &triangle2);
     bool is_line_intersect_triangle(const line_t &line, const triangle_t &triangle);
+    bool is_point_in_cube(const point_t &point, const cube_t &cube);
 
     std::variant<nullptr_t, point_t, line_t> get_line_plane_intersection(const line_t &line, const plane_t &plane);
         
@@ -105,4 +118,8 @@ namespace geometry {
     bool intersect(const point_t &point, const figure_t &figure);
     bool intersect(const line_t &line, const figure_t &figure);
     bool intersect(const triangle_t &triangle, const figure_t &figure);
+
+    bool is_fig_in_cube(const figure_t &fig, const cube_t &cube);
+
+    double get_max_coord(const std::vector<figure_t> &figs);
 } // namespace geometry

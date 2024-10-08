@@ -4,7 +4,8 @@ namespace geometry
 {
     //  =========================== Point functions ===========================
 
-    point_t::point_t(const double x, const double y, const double z) : x_(x), y_(y), z_(z) {}
+    point_t::point_t(const double x, const double y, const double z) :
+        x_(x), y_(y), z_(z) {}
     point_t::point_t(const point_t &point) : x_(point.x_), y_(point.y_), z_(point.z_) {}
 
     void point_t::print() const
@@ -118,6 +119,12 @@ namespace geometry
     {
         std::cout << a_ << " * x + " << b_ << " * y + " << c_ << " * z + " << d_ << std::endl;
     }
+
+//  ============================ Cube functions =============================
+
+    cube_t::cube_t(double x1, double x2, double y1, double y2, double z1, double z2) : 
+        x1_(x1), x2_(x2), y1_(y1), y2_(y2), z1_(z1), z2_(z2) {}
+
 
 //  =========================== Vector functions ============================
 

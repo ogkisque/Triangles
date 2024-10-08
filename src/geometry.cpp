@@ -357,4 +357,78 @@ namespace geometry
                is_line_intersect_triangle(triangle2.l3_, triangle1);
     }
 
+    bool is_point_in_cube(const point_t &point, const cube_t &cube)
+    {
+        return (real_nums::is_more_or_equal_zero(point.x_ - cube.x1_) &&
+                real_nums::is_less_or_equal_zero(point.x_ - cube.x2_) &&
+                real_nums::is_more_or_equal_zero(point.y_ - cube.y1_) &&
+                real_nums::is_less_or_equal_zero(point.y_ - cube.y2_) &&
+                real_nums::is_more_or_equal_zero(point.z_ - cube.z1_) &&
+                real_nums::is_less_or_equal_zero(point.z_ - cube.z2_));
+    }
+
+    struct CallFigureInCube
+    {
+        bool operator()(const point_t &point)
+        {
+            return is_point_in_cube(point, cube);
+        }
+
+        bool operator()(const line_t &line)
+        {
+            return is_point_in_cube(line.p1_, cube) &&
+                   is_point_in_cube(line.p2_, cube);
+        }
+
+        bool operator()(const triangle_t &triangle)
+        {
+            return is_point_in_cube(triangle.p1_, cube) &&
+                   is_point_in_cube(triangle.p2_, cube) &&
+                   is_point_in_cube(triangle.p3_, cube);
+        }
+
+        const cube_t &cube;
+    };
+    
+    bool is_fig_in_cube(const figure_t &fig, const cube_t &cube)
+    {
+        return std::visit(CallFigureInCube{cube}, fig);
+    }
+
+    struct CallGetMaxCoord
+    {
+        double operator()(const point_t &point)
+        {
+            return real_nums::max3(std::abs(point.x_), std::abs(point.y_), std::abs(point.z_));
+        }
+
+        double operator()(const line_t &line)
+        {
+            return real_nums::max6(std::abs(line.p1_.x_), std::abs(line.p1_.y_), std::abs(line.p1_.z_),
+                                   std::abs(line.p2_.x_), std::abs(line.p2_.y_), std::abs(line.p2_.z_));
+        }
+
+        double operator()(const triangle_t &triangle)
+        {
+            return real_nums::max9(std::abs(triangle.p1_.x_), std::abs(triangle.p1_.y_), std::abs(triangle.p1_.z_),
+                                   std::abs(triangle.p2_.x_), std::abs(triangle.p2_.y_), std::abs(triangle.p2_.z_),
+                                   std::abs(triangle.p3_.x_), std::abs(triangle.p3_.y_), std::abs(triangle.p3_.z_));
+        }
+    };
+
+    double get_max_coord(const std::vector<figure_t> &figs)
+    {
+        double max_coord = 0;
+
+        for (auto fig : figs)
+        {
+            double cur_max_coord = std::visit(CallGetMaxCoord{}, fig);
+            max_coord = (max_coord < cur_max_coord) ? cur_max_coord : max_coord;
+        }
+
+        return max_coord;
+    }
+
+
+
 } // namespace geometry
