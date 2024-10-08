@@ -40,10 +40,10 @@ namespace octotree {
         double cube_min_size_;
         size_t num_fig_;
         
-        // const std::vector<geometry::figure_t> &figs;
-        // min_cube
         octotree_t(const std::vector<geometry::figure_t> &figs);
         ~octotree_t();
+
+        void print() const;
     };
 
     void fill_octonode(octonode_t &node);

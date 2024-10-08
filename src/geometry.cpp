@@ -384,12 +384,12 @@ namespace geometry
         {
             return is_point_in_cube(triangle.p1_, cube) &&
                    is_point_in_cube(triangle.p2_, cube) &&
-                   is_point_in_cube(triangle.p1_, cube);
+                   is_point_in_cube(triangle.p3_, cube);
         }
 
         const cube_t &cube;
     };
-
+    
     bool is_fig_in_cube(const figure_t &fig, const cube_t &cube)
     {
         return std::visit(CallFigureInCube{cube}, fig);

@@ -30,23 +30,6 @@ namespace
 
         return num_figs;
     }
-
-    void intersect_figs(std::vector<geometry::figure_t> &figs,
-                        size_t num_figs,
-                        std::set<size_t> &intersect_figs_id)
-    {
-        for (size_t i = 0; i < num_figs; i++)
-        {
-            for (size_t j = i + 1; j < num_figs; j++)
-            {
-                if (geometry::intersect(figs[i], figs[j]))
-                {
-                    intersect_figs_id.insert(i);
-                    intersect_figs_id.insert(j);
-                }
-            }
-        }
-    }
 }
 
 int main()
