@@ -14,18 +14,18 @@ namespace octotree
         cube_max_size_ = 2 * max_coord;
         cube_min_size_ = cube_max_size_ / num_fig_;
 
-        ListT* figs_list = new ListT;
         unsigned id = 0;
-        
-        for (geometry::figure_t fig : figs)
-            (*figs_list).push_back(std::make_pair(id++, fig));
 
         root_ = new octonode_t{limit_cube, nullptr, *this};
-        
-        root_->figs_ = figs_list;
+
+        for (geometry::figure_t fig : figs)
+            (*root_->figs_).push_back(std::make_pair(id++, fig));
     }
 
-    octotree_t::~octotree_t() {}
+    octotree_t::~octotree_t()
+    {
+        delete root_;
+    }
 
     void octotree_t::print() const
     {
@@ -43,6 +43,14 @@ namespace octotree
     octonode_t::~octonode_t()
     {
         delete figs_;
+
+        for (size_t child_num = 0; child_num < NUM_CHILDREN; child_num++)
+        {
+            if (children_[child_num] == nullptr)
+                continue;
+            
+            delete children_[child_num];
+        }
     }
 
     void share_cube(octonode_t &node)
@@ -92,7 +100,12 @@ namespace octotree
         
         if (real_nums::is_less_or_equal_zero(node.cube_.x2_ - node.cube_.x1_ - node.tree_.cube_min_size_) ||
             node.figs_->size() < 3)
+        {
+            for (size_t child_num = 0; child_num < NUM_CHILDREN; child_num++)
+                node.children_[child_num] = nullptr;
+
             return;
+        }
 
         share_cube(node);
     }
