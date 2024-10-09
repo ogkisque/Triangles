@@ -25,6 +25,6 @@ if (WITH_UNIT_TESTS)
     add_subdirectory(tests)
 endif()
 
-if (WITH_BENCH)
+if (WITH_BENCHMARKS)
     add_subdirectory(benchs)
 endif()
