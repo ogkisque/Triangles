@@ -2,9 +2,11 @@
 #include <cassert>
 #include <vector>
 #include <set>
+#include <time.h>
 
 #include "geometry.hpp"
 #include "octotree.hpp"
+
 
 namespace
 {
@@ -30,15 +32,69 @@ namespace
 
         return num_figs;
     }
+
+    std::vector<geometry::figure_t> FIGS;
+    size_t NUM_FIGS;
+
+    double get_random(double min, double max)
+    {
+        const long max_rand = 1000000L;
+        return min + (max - min) * (random() % max_rand) / max_rand;
+    }
+
+    size_t get_figs(std::vector<geometry::figure_t> &figs)
+    {
+        double x1, x2, x3, y1, y2, y3, z1, z2, z3;
+        size_t num_figs = 10;
+        
+        for (int i = 0; i < num_figs; i++)
+        {
+            x1 = get_random(-100, 100);
+            x2 = get_random(-100, 100);
+            x3 = get_random(-100, 100);
+            y1 = get_random(-100, 100);
+            y2 = get_random(-100, 100);
+            y3 = get_random(-100, 100);
+            z1 = get_random(-100, 100);
+            z2 = get_random(-100, 100);
+            z3 = get_random(-100, 100);
+
+            geometry::point_t point1{x1, y1, z1};
+            geometry::point_t point2{x2, y2, z2};
+            geometry::point_t point3{x3, y3, z3};
+            
+            geometry::figure_t fig = geometry::figure_ctor(point1, point2, point3);
+
+            figs.push_back(fig);
+        }
+
+        return num_figs;
+    }
+
+    void intersect_figs(std::vector<geometry::figure_t> &figs,
+                        size_t num_figs,
+                        std::set<size_t> &intersect_figs_id)
+    {
+        for (size_t i = 0; i < num_figs; i++)
+        {
+            for (size_t j = i + 1; j < num_figs; j++)
+            {
+                if (geometry::intersect(figs[i], figs[j]))
+                {
+                    intersect_figs_id.insert(i);
+                    intersect_figs_id.insert(j);
+                }
+            }
+        }
+    }
 }
 
 int main()
 {
-    std::vector<geometry::figure_t> figs;
-    size_t num_figs = input_figs(figs);
-
+    srandom(time(NULL));
+    NUM_FIGS = get_figs(FIGS);
     std::set<size_t> intersect_figs_id;
-    octotree::intersect_figs(figs, intersect_figs_id);
+    octotree::intersect_figs(FIGS, intersect_figs_id);
 
     for (size_t id : intersect_figs_id)
         std::cout << id << std::endl;
