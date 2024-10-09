@@ -8,20 +8,23 @@
 #include "hayai.hpp"
 #include "hayai_main.hpp"
 
-
 namespace
 {
-    size_t input_figs(std::vector<geometry::figure_t> &figs)
+    std::vector<geometry::figure_t> FIGS;
+    size_t NUM_FIGS;
+
+    size_t get_figs(std::vector<geometry::figure_t> &figs)
     {
         size_t num_figs = 0;
-        std::cin >> num_figs;
-        assert(std::cin.good());
+        std::ifstream in("benchs/data.dat");
+        assert(in.is_open());
 
-        for (size_t i = 0; i < num_figs; i++)
+        double x1, x2, x3, y1, y2, y3, z1, z2, z3;
+        in >> num_figs;
+        while (in >> x1 >> y1 >> z1 >> x2 >> y2 >> z2 >> x3 >> y3 >> z3)
         {
-            double x1, x2, x3, y1, y2, y3, z1, z2, z3;
-            std::cin >> x1 >> y1 >> z1 >> x2 >> y2 >> z2 >> x3 >> y3 >> z3; 
-            assert(std::cin.good());
+            //std::cout << x1 << y1 << z1 << std::endl;
+
             geometry::point_t point1{x1, y1, z1};
             geometry::point_t point2{x2, y2, z2};
             geometry::point_t point3{x3, y3, z3};
@@ -30,6 +33,8 @@ namespace
 
             figs.push_back(fig);
         }
+
+        in.close();
 
         return num_figs;
     }
@@ -52,44 +57,27 @@ namespace
     }
 }
 
-// BENCHMARK(MyCoreTests, TestSqrt, 10, 100)
-// {
-//     int a = 4567;
-//     double b = sqrt(a);
-//     for (int i = 0; i < 1000)
-//     {
-//         b = sqrt(a * i);
-//         std::cout << b << std::endl;
-//     }
-// }
-
-BENCHMARK(MyCoreTests, TestOctotree, 10, 100)
+BENCHMARK(IntersectBenchs, BenchOctotree, 1, 1)
 {
-    std::vector<geometry::figure_t> figs;
-    size_t num_figs = input_figs(figs);
-
     std::set<size_t> intersect_figs_id;
-    octotree::intersect_figs(figs, intersect_figs_id);
+    octotree::intersect_figs(FIGS, intersect_figs_id);
 
-    for (size_t id : intersect_figs_id)
-        std::cout << id << std::endl;
+    // for (size_t id : intersect_figs_id)
+    //     std::cout << id << std::endl;
 }
 
-// BENCHMARK(MyCoreTests, TestDefault, 10, 100)
-// {
-//     std::vector<geometry::figure_t> figs;
-//     size_t num_figs = input_figs(figs);
+BENCHMARK(IntersectBenchs, BenchDefault, 1, 1)
+{
+    std::set<size_t> intersect_figs_id;
+    intersect_figs(FIGS, NUM_FIGS, intersect_figs_id);
 
-//     std::set<size_t> intersect_figs_id;
-//     // anonymous namespace
-//     intersect_figs(figs, intersect_figs_id);
-
-//     for (size_t id : intersect_figs_id)
-//         std::cout << id << std::endl;
-// }
+    //for (size_t id : intersect_figs_id)
+        //std::cout << id << std::endl;
+}
 
 int main()
 {
+    NUM_FIGS = get_figs(FIGS);
     hayai::MainRunner runner;
     return runner.Run();
 }

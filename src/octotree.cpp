@@ -67,14 +67,13 @@ namespace octotree
             int mod6 = (i / 4 + 1) % 2;
 
             geometry::cube_t cube{node.cube_.x1_ + mod1 * new_cube_size,
-                                    node.cube_.x2_ - mod2 * new_cube_size,
-                                    node.cube_.y1_ + mod3 * new_cube_size,
-                                    node.cube_.y2_ - mod4 * new_cube_size,
-                                    node.cube_.z1_ + mod5 * new_cube_size,
-                                    node.cube_.z2_ - mod6 * new_cube_size};
+                                  node.cube_.x2_ - mod2 * new_cube_size,
+                                  node.cube_.y1_ + mod3 * new_cube_size,
+                                  node.cube_.y2_ - mod4 * new_cube_size,
+                                  node.cube_.z1_ + mod5 * new_cube_size,
+                                  node.cube_.z2_ - mod6 * new_cube_size};
 
             node.children_[i] = new octonode_t{cube, node.figs_, node.tree_};
-
             fill_octonode(*node.children_[i]);
         }
     }
@@ -112,7 +111,7 @@ namespace octotree
         share_cube(node);
     }
 
-    // main fucntion
+    // main function
     void intersect_figs(std::vector<geometry::figure_t> &figs, std::set<size_t> &intersect_figs_id)
     {
         octotree_t tree{figs};
