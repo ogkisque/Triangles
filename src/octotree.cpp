@@ -88,8 +88,10 @@ namespace octotree
         {
             if (geometry::is_fig_in_cube(list_it->second, node.cube_))
             {
-                node.figs_->push_back(*list_it);
-                node.parent_figs_->erase(list_it);
+                ListIterT temp = list_it;
+                node.figs_->push_back(*temp);
+                list_it++;
+                node.parent_figs_->erase(temp);
             }
         }
     }
