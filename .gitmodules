@@ -1,3 +1,4 @@
 [submodule "libhayai"]
 	path = libhayai
 	url = https://github.com/casm-lang/libhayai.git
+	branch = benchmarks

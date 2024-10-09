@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.11)
 project(triangle)
 
 option(WITH_UNIT_TESTS "unit tests" OFF)
+option(WITH_BENCHMARKS "benchmarks" OFF)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -22,4 +23,8 @@ if (WITH_UNIT_TESTS)
 
     message("Build binary file for UNIT tests ...")
     add_subdirectory(tests)
+endif()
+
+if (WITH_BENCHMARKS)
+    add_subdirectory(benchs)
 endif()
