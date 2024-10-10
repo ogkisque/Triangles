@@ -25,7 +25,7 @@ namespace octotree {
         geometry::cube_t cube_;
         const octotree_t &tree_;
 
-        std::array<octonode_t*, NUM_CHILDREN> children_;
+        std::array<octonode_t*, NUM_CHILDREN> children_ = {};
 
         octonode_t(geometry::cube_t cube, ListT *parent_figs, const octotree_t& tree);
         ~octonode_t();

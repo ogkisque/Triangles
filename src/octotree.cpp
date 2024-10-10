@@ -88,8 +88,8 @@ namespace octotree
             if (geometry::is_fig_in_cube(list_it->second, node.cube_))
             {
                 ListIterT temp = list_it;
-                node.figs_->push_back(*temp);
                 list_it++;
+                node.figs_->push_back(*temp);
                 node.parent_figs_->erase(temp);
             }
         }
@@ -122,19 +122,14 @@ namespace octotree
     void intersect(octonode_t &node, std::set<size_t> &intersect_figs_id) 
     {
         intersection_in_cube(node, intersect_figs_id);
-
+        
+        if (node.children_[0] == nullptr)
+            return;
+        
         intersect_with_children(node, intersect_figs_id);
 
-        if (node.children_.size() == 0)
-            return;
-
         for (size_t child_num = 0; child_num < NUM_CHILDREN; child_num++)
-        {
-            if (node.children_[child_num] == nullptr)
-                continue;
-
             intersect(*(node.children_[child_num]), intersect_figs_id);
-        }
     }
 
     void intersection_in_cube(octonode_t &node, std::set<size_t> &intersect_figs_id)
@@ -154,7 +149,6 @@ namespace octotree
 
     void intersect_node_with_node(octonode_t &node, octonode_t &other, std::set<size_t> &intersect_figs_id)
     {
-
         for (auto node_it = node.figs_->begin(); node_it != node.figs_->end(); node_it++)
         {
             for (auto other_it = other.figs_->begin(); other_it != other.figs_->end(); other_it++)
@@ -172,30 +166,17 @@ namespace octotree
     {
         intersect_node_with_node(node, subtree, intersect_figs_id);
 
-        if (subtree.children_.size() == 0)
+        if (subtree.children_[0] == nullptr)
             return;
 
         for (size_t child_num = 0; child_num < NUM_CHILDREN; child_num++)
-        {
-            if (subtree.children_[child_num] == nullptr)
-                continue;
-            
             intersect_with_subtree(node, *(subtree.children_[child_num]), intersect_figs_id);
-        }
     }
 
     void intersect_with_children(octonode_t &node, std::set<size_t> &intersect_figs_id)
     {
-        if (node.children_.size() == 0)
-            return;
-
-        for (size_t child_num = 0; child_num < NUM_CHILDREN; child_num++)
-        {
-            if (node.children_[child_num] == nullptr)
-                continue;
-            
+        for (size_t child_num = 0; child_num < NUM_CHILDREN; child_num++)            
             intersect_with_subtree(node, *(node.children_[child_num]), intersect_figs_id);
-        }
     }
 
 } // namespace octotree
