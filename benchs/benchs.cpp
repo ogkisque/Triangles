@@ -44,19 +44,21 @@ namespace
     size_t get_figs(std::vector<geometry::figure_t> &figs)
     {
         double x1, x2, x3, y1, y2, y3, z1, z2, z3;
-        size_t num_figs = 100;
+        size_t num_figs = 10000;
         
         for (int i = 0; i < num_figs; i++)
         {
             x1 = get_random(-100, 100);
-            x2 = get_random(-100, 100);
-            x3 = get_random(-100, 100);
             y1 = get_random(-100, 100);
-            y2 = get_random(-100, 100);
-            y3 = get_random(-100, 100);
             z1 = get_random(-100, 100);
-            z2 = get_random(-100, 100);
-            z3 = get_random(-100, 100);
+            
+            x2 = x1 + get_random(-2, 2);
+            y2 = y1 + get_random(-2, 2);
+            z2 = z1 + get_random(-2, 2);
+            
+            x3 = x1 + get_random(-2, 2);
+            y3 = y1 + get_random(-2, 2);
+            z3 = z1 + get_random(-2, 2);
 
             geometry::point_t point1{x1, y1, z1};
             geometry::point_t point2{x2, y2, z2};
@@ -94,11 +96,11 @@ BENCHMARK(IntersectBenchs, BenchOctotree, 1, 1)
     octotree::intersect_figs(FIGS, intersect_figs_id);
 }
 
-// BENCHMARK(IntersectBenchs, BenchDefault, 1, 1)
-// {
-//     std::set<size_t> intersect_figs_id;
-//     intersect_figs(FIGS, NUM_FIGS, intersect_figs_id);
-// }
+BENCHMARK(IntersectBenchs, BenchDefault, 1, 1)
+{
+    std::set<size_t> intersect_figs_id;
+    intersect_figs(FIGS, NUM_FIGS, intersect_figs_id);
+}
 
 int main()
 {

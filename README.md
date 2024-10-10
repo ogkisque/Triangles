@@ -39,7 +39,7 @@ After that, run:
 
 ### Benchmarks
 
-Also you can compare the performance of triangle intersection finding with and without octotry technology.
+Also you can compare the performance of triangle intersection finding with and without octotree technology.
 
 Generate Makefiles with the WITH_BENCHMARKS flag:
 ```
