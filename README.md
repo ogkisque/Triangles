@@ -36,3 +36,22 @@ After that, run:
 ```
 ./build/tests/unit_test
 ```
+
+### Benchmarks
+
+Also you can compare the performance of triangle intersection finding with and without octotry technology.
+
+Generate Makefiles with the WITH_BENCHMARKS flag:
+```
+cmake [...] -DWITH_BENCHMARKS=1
+```
+
+Then build `benchs` target:
+```
+cmake --build build --target unit_test
+```
+
+Finally, run the program:
+```
+./build/tests/benchs
+```
