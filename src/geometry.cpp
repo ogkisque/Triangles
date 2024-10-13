@@ -399,20 +399,20 @@ namespace geometry
     {
         double operator()(const point_t &point)
         {
-            return real_nums::max3(std::abs(point.x_), std::abs(point.y_), std::abs(point.z_));
+            return real_nums::max3(std::fabs(point.x_), std::fabs(point.y_), std::fabs(point.z_));
         }
 
         double operator()(const line_t &line)
         {
-            return real_nums::max6(std::abs(line.p1_.x_), std::abs(line.p1_.y_), std::abs(line.p1_.z_),
-                                   std::abs(line.p2_.x_), std::abs(line.p2_.y_), std::abs(line.p2_.z_));
+            return real_nums::max6(std::fabs(line.p1_.x_), std::fabs(line.p1_.y_), std::fabs(line.p1_.z_),
+                                   std::fabs(line.p2_.x_), std::fabs(line.p2_.y_), std::fabs(line.p2_.z_));
         }
 
         double operator()(const triangle_t &triangle)
         {
-            return real_nums::max9(std::abs(triangle.p1_.x_), std::abs(triangle.p1_.y_), std::abs(triangle.p1_.z_),
-                                   std::abs(triangle.p2_.x_), std::abs(triangle.p2_.y_), std::abs(triangle.p2_.z_),
-                                   std::abs(triangle.p3_.x_), std::abs(triangle.p3_.y_), std::abs(triangle.p3_.z_));
+            return real_nums::max9(std::fabs(triangle.p1_.x_), std::fabs(triangle.p1_.y_), std::fabs(triangle.p1_.z_),
+                                   std::fabs(triangle.p2_.x_), std::fabs(triangle.p2_.y_), std::fabs(triangle.p2_.z_),
+                                   std::fabs(triangle.p3_.x_), std::fabs(triangle.p3_.y_), std::fabs(triangle.p3_.z_));
         }
     };
 
@@ -423,7 +423,7 @@ namespace geometry
         for (auto fig : figs)
         {
             double cur_max_coord = std::visit(CallGetMaxCoord{}, fig);
-            max_coord = (max_coord < cur_max_coord) ? cur_max_coord : max_coord;
+            max_coord = real_nums::max2(max_coord, cur_max_coord);
         }
 
         return max_coord;
