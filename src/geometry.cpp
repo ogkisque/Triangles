@@ -359,12 +359,12 @@ namespace geometry
 
     bool is_point_in_cube(const point_t &point, const cube_t &cube)
     {
-        return (real_nums::is_more_or_equal_zero(point.x_ - cube.x1_) &&
-                real_nums::is_less_or_equal_zero(point.x_ - cube.x2_) &&
-                real_nums::is_more_or_equal_zero(point.y_ - cube.y1_) &&
-                real_nums::is_less_or_equal_zero(point.y_ - cube.y2_) &&
-                real_nums::is_more_or_equal_zero(point.z_ - cube.z1_) &&
-                real_nums::is_less_or_equal_zero(point.z_ - cube.z2_));
+        return (real_nums::is_more_zero(point.x_ - cube.x1_) &&
+                real_nums::is_less_zero(point.x_ - cube.x2_) &&
+                real_nums::is_more_zero(point.y_ - cube.y1_) &&
+                real_nums::is_less_zero(point.y_ - cube.y2_) &&
+                real_nums::is_more_zero(point.z_ - cube.z1_) &&
+                real_nums::is_less_zero(point.z_ - cube.z2_));
     }
 
     struct CallFigureInCube
