@@ -37,6 +37,13 @@ After that, run:
 ./build/tests/unit_test
 ```
 
+### End to end
+
+If you want to run end-to-end tests, type it:
+```
+python3 check_end_to_end.py
+```
+
 ### Benchmarks
 
 Also you can compare the performance of triangle intersection finding with and without octotree technology.
