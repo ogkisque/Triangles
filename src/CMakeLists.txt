@@ -1,7 +1,7 @@
 set(INCLUDE_DIR ${CMAKE_SOURCE_DIR}/include)
 
-add_library(geometry geometry.cpp methods.cpp octotree.cpp)
-target_include_directories(geometry PUBLIC ${INCLUDE_DIR})
+add_library(trianglelib INTERFACE)
+target_include_directories(trianglelib INTERFACE ${INCLUDE_DIR})
 
 add_executable(main main.cpp)
-target_link_libraries(main geometry)
+target_link_libraries(main trianglelib)
