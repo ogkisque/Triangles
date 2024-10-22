@@ -439,7 +439,7 @@ figure_t figure_ctor(const point_t &point1, const point_t &point2,
 }
 
 void print_figure(const figure_t &figure) {
-    std::visit([](const auto &fig) { return fig.print(); }, figure);
+    std::visit([](const auto &figure) { return figure.print(); }, figure);
 }
 
 struct CallIntersectPoint {
@@ -484,7 +484,7 @@ struct CallIntersectTriangle {
 
 bool intersect(const figure_t &figure1, const figure_t &figure2) {
     return std::visit(
-        [figure2](const auto &fig1) { return intersect(fig1, figure2); },
+        [figure2](const auto &figure1) { return intersect(figure1, figure2); },
         figure1);
 }
 
