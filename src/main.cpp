@@ -29,7 +29,7 @@ size_t input_figs(const size_t num_figs, std::vector<geometry::figure_t> &figs) 
 
         geometry::figure_t fig = geometry::figure_ctor(point1, point2, point3);
 
-        figs[i] = fig;
+        figs.push_back(fig);
     }
 
     return num_figs;
@@ -43,9 +43,8 @@ int main() {
         return 1;
     }
 
-    geometry::point_t temp_point = {0, 0, 0};
-    geometry::figure_t temp_figure = figure_ctor(temp_point, temp_point, temp_point);
-    std::vector<geometry::figure_t> figs{num_figs, temp_figure};
+    std::vector<geometry::figure_t> figs{};
+    figs.reserve(num_figs);
     
     if (input_figs(num_figs, figs) == 0) {
         std::cout << "INCORRECT INPUT" << std::endl;
