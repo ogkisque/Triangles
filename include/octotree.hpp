@@ -9,30 +9,34 @@
 
 namespace octotree {
 
-class octonode_t;
-class octotree_t;
+template <typename T> class octonode_t;
 
-using ListT = typename std::list<std::pair<unsigned, geometry::figure_t>>;
+template <typename T> class octotree_t;
+
+template <typename T>
+using ListT = typename std::list<std::pair<unsigned, geometry::figure_t<T>>>;
+
+template <typename T>
 using ListIterT =
-    typename std::list<std::pair<unsigned, geometry::figure_t>>::iterator;
+    typename std::list<std::pair<unsigned, geometry::figure_t<T>>>::iterator;
 
 const int NUM_CHILDREN = 8;
 
-class octonode_t {
+template <typename T> class octonode_t {
 public:
-    ListT *figs_;
-    ListT *parent_figs_;
-    geometry::cube_t cube_;
-    const octotree_t &tree_;
+    ListT<T> *figs_;
+    ListT<T> *parent_figs_;
+    geometry::cube_t<T> cube_;
+    const octotree_t<T> &tree_;
 
-    std::array<octonode_t *, NUM_CHILDREN> children_ = {};
+    std::array<octonode_t<T> *, NUM_CHILDREN> children_ = {};
 
     void fill_octonode();
 
-    octonode_t(geometry::cube_t cube, ListT *parent_figs,
-               const octotree_t &tree)
+    octonode_t(geometry::cube_t<T> cube, ListT<T> *parent_figs,
+               const octotree_t<T> &tree)
         : cube_(cube), parent_figs_(parent_figs), tree_(tree) {
-        figs_ = new ListT;
+        figs_ = new ListT<T>;
     }
     ~octonode_t() {
         delete figs_;
@@ -49,10 +53,10 @@ public:
         if (parent_figs_ == nullptr)
             return;
 
-        for (ListIterT list_it = parent_figs_->begin();
+        for (ListIterT<T> list_it = parent_figs_->begin();
              list_it != parent_figs_->end(); list_it++) {
             if (geometry::is_fig_in_cube(list_it->second, cube_)) {
-                ListIterT temp = list_it;
+                ListIterT<T> temp = list_it;
                 list_it--;
                 figs_->push_back(*temp);
                 parent_figs_->erase(temp);
@@ -71,14 +75,14 @@ public:
             int mod5 = (i / 4) % 2;
             int mod6 = (i / 4 + 1) % 2;
 
-            geometry::cube_t cube{cube_.x1_ + mod1 * new_cube_size,
-                                  cube_.x2_ - mod2 * new_cube_size,
-                                  cube_.y1_ + mod3 * new_cube_size,
-                                  cube_.y2_ - mod4 * new_cube_size,
-                                  cube_.z1_ + mod5 * new_cube_size,
-                                  cube_.z2_ - mod6 * new_cube_size};
+            geometry::cube_t<T> cube{cube_.x1_ + mod1 * new_cube_size,
+                                     cube_.x2_ - mod2 * new_cube_size,
+                                     cube_.y1_ + mod3 * new_cube_size,
+                                     cube_.y2_ - mod4 * new_cube_size,
+                                     cube_.z1_ + mod5 * new_cube_size,
+                                     cube_.z2_ - mod6 * new_cube_size};
 
-            children_[i] = new octonode_t{cube, figs_, tree_};
+            children_[i] = new octonode_t<T>{cube, figs_, tree_};
             children_[i]->fill_octonode();
         }
     }
@@ -136,19 +140,19 @@ public:
     }
 }; // class octonode_t
 
-class octotree_t {
+template <typename T> class octotree_t {
 public:
-    octonode_t *root_;
+    octonode_t<T> *root_;
 
     double cube_max_size_;
     double cube_min_size_;
     size_t num_fig_;
 
-    octotree_t(const std::vector<geometry::figure_t> &figs) {
-        double max_coord = geometry::get_max_coord(figs);
+    octotree_t(const std::vector<geometry::figure_t<T>> &figs) {
+        T max_coord = geometry::get_max_coord<T>(figs);
 
-        geometry::cube_t limit_cube = {-max_coord, max_coord,  -max_coord,
-                                       max_coord,  -max_coord, max_coord};
+        geometry::cube_t<T> limit_cube = {-max_coord, max_coord,  -max_coord,
+                                          max_coord,  -max_coord, max_coord};
 
         num_fig_ = figs.size();
         cube_max_size_ = 2 * max_coord;
@@ -156,20 +160,20 @@ public:
 
         unsigned id = 0;
 
-        root_ = new octonode_t{limit_cube, nullptr, *this};
+        root_ = new octonode_t<T>{limit_cube, nullptr, *this};
 
-        for (geometry::figure_t fig : figs)
+        for (geometry::figure_t<T> fig : figs)
             (*root_->figs_).push_back(std::make_pair(id++, fig));
     }
 
     ~octotree_t() { delete root_; }
 }; // class octotree_t
 
-void octonode_t::fill_octonode() {
+template <typename T> void octonode_t<T>::fill_octonode() {
     fill_figures_in_node();
 
-    if (real_nums::is_less_or_equal_zero(cube_.x2_ - cube_.x1_ -
-                                         tree_.cube_min_size_) ||
+    if (real_nums::is_less_or_equal_zero<T>(cube_.x2_ - cube_.x1_ -
+                                            tree_.cube_min_size_) ||
         figs_->size() < 3) {
         for (size_t child_num = 0; child_num < NUM_CHILDREN; child_num++)
             children_[child_num] = nullptr;
@@ -180,9 +184,10 @@ void octonode_t::fill_octonode() {
     share_cube();
 }
 
-void intersect_figs(std::vector<geometry::figure_t> &figs,
+template <typename T = double>
+void intersect_figs(std::vector<geometry::figure_t<T>> &figs,
                     std::set<size_t> &intersect_figs_id) {
-    octotree_t tree{figs};
+    octotree_t<T> tree{figs};
     tree.root_->fill_octonode();
     tree.root_->intersect(intersect_figs_id);
 }
