@@ -26,49 +26,47 @@ public:
     static float epsilon() { return 1e-5; };
 };
 
-const double MAX = std::numeric_limits<double>::max();
-
-template <typename T = double> inline bool is_zero(const double x) {
+template <typename T = double> inline bool is_zero(T x) {
     T epsilon = my_epsilon<T>::epsilon();
     return std::fabs(x) < epsilon;
 }
 
-template <typename T = double> inline bool equal(const T x, const T y) {
+template <typename T = double> inline bool equal(T x, T y) {
     T epsilon = my_epsilon<T>::epsilon();
     return std::fabs(x - y) < epsilon;
 }
 
-template <typename T = double> inline bool is_more_zero(const T x) {
+template <typename T = double> inline bool is_more_zero(T x) {
     T epsilon = my_epsilon<T>::epsilon();
     return x > epsilon;
 }
 
-template <typename T = double> inline bool is_less_zero(const T x) {
+template <typename T = double> inline bool is_less_zero(T x) {
     T epsilon = my_epsilon<T>::epsilon();
     return x < -epsilon;
 }
 
-template <typename T = double> inline bool is_more_or_equal_zero(const T x) {
+template <typename T = double> inline bool is_more_or_equal_zero(T x) {
     return is_more_zero<T>(x) || is_zero<T>(x);
 }
 
-template <typename T = double> inline bool is_less_or_equal_zero(const T x) {
+template <typename T = double> inline bool is_less_or_equal_zero(T x) {
     return is_less_zero<T>(x) || is_zero<T>(x);
 }
 
-template <typename T = double> inline double max2(T x, T y) {
+template <typename T = double> inline T max2(T x, T y) {
     return std::fmax(x, y);
 }
 
-template <typename T = double> inline double min2(T x, T y) {
+template <typename T = double> inline T min2(T x, T y) {
     return std::fmin(x, y);
 }
 
-template <typename T = double> inline double max3(T x, T y, T z) {
+template <typename T = double> inline T max3(T x, T y, T z) {
     return std::fmax(std::fmax(x, y), z);
 }
 
-template <typename T = double> inline double min3(T x, T y, T z) {
+template <typename T = double> inline T min3(T x, T y, T z) {
     return std::fmin(std::fmin(x, y), z);
 }
 
