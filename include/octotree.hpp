@@ -65,7 +65,7 @@ public:
     }
 
     void share_cube() {
-        double new_cube_size = (cube_.x2_ - cube_.x1_) / 2;
+        T new_cube_size = (cube_.x2_ - cube_.x1_) / 2;
 
         for (int i = 0; i < NUM_CHILDREN; i++) {
             int mod1 = (i % 2);
@@ -144,8 +144,8 @@ template <typename T> class octotree_t {
 public:
     octonode_t<T> *root_;
 
-    double cube_max_size_;
-    double cube_min_size_;
+    T cube_max_size_;
+    T cube_min_size_;
     size_t num_fig_;
 
     octotree_t(const std::vector<geometry::figure_t<T>> &figs) {
