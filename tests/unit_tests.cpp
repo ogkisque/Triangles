@@ -723,6 +723,21 @@ TEST(IS_TRIANGLE_INTERSECT_TRIANGLE_TEST, test_17) {
     ASSERT_EQ(t1.is_intersect_triangle(t2), true);
 }
 
+TEST(IS_TRIANGLE_INTERSECT_TRIANGLE_TEST, test_18) {
+    geometry::point_t<float> p1{133.537, 197.716, 176.607};
+    geometry::point_t<float> p2{133.074, 197.949, 177.451};
+    geometry::point_t<float> p3{132.958, 198.563, 176.945};
+
+    geometry::point_t<float> p4{132.737, 198.054, 176.767};
+    geometry::point_t<float> p5{132.748, 197.784, 176.807};
+    geometry::point_t<float> p6{133.45, 197.939, 177.031};
+
+    geometry::triangle_t<float> t1{p1, p2, p3};
+    geometry::triangle_t<float> t2{p4, p5, p6};
+
+    ASSERT_EQ(t1.is_intersect_triangle(t2), true);
+}
+
 // LINE INTERSECT PLANE
 
 TEST(IS_LINE_INTERSECT_PLANE, test_1) {
