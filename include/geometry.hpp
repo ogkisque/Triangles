@@ -264,8 +264,9 @@ bool point_t<T>::is_in_triangle(const triangle_t<T> &triangle) const {
                        triangle.plane_.c_ * z_ + triangle.plane_.d_;
 
     if (!real_nums::is_zero<T>(plane_equation))
+    {
         return false;
-
+    }
     point_t<T> A = triangle.p1_, B = triangle.p2_, C = triangle.p3_, O = *this;
 
     vector_t AB{A, B};
@@ -379,7 +380,9 @@ bool line_t<T>::is_intersect_triangle_2d(const triangle_t<T> &triangle) const {
 }
 
 template <typename T> struct CallLineIntersectTriangle {
-    bool operator()(nullptr_t) { return false; }
+    bool operator()(nullptr_t) {
+        return false;
+    }
     bool operator()(const point_t<T> &point) {
         return point.is_in_triangle(triangle);
     }
